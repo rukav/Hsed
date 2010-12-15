@@ -1,8 +1,6 @@
 This is a version of sed based on POSIX "The Open Group Base Specifications Issue 7" 
 IEEE Std 1003.1-2008.  
 
-There are several new features, including possibility to save sed output in the memory.
-
 Usage: Sed [-n] script [file...],       Sed [-n] -e script [-e script]... [-f script_file]... [file...],       Sed [-n] [-e script]... -f script_file [-f script_file]... [file...]
 
 
