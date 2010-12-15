@@ -1,0 +1,10 @@
+who(1) who(1) 
+NAME
+who - who is on the system? 
+SYNOPSI
+who [-a] [-b] [-d] [-H] [-l] [-p] [-q] [-r] [-s] [-t] [-T]
+[-u] [file] who am i
+who am I 
+DESCRIP
+time,
+the ...

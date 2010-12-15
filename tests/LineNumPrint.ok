@@ -1,0 +1,32 @@
+243
+        if (x == 0)
+248
+        if (x < 0)
+273
+        if (rand_type == TYPE_0)
+303
+        if (rand_type == TYPE_0)
+310
+        if (fd >= 0) {
+311
+                if (_read(fd, (void *) state, len) == (ssize_t) len)
+316
+        if (!done) {
+325
+        if (rand_type != TYPE_0) {
+363
+        if (rand_type == TYPE_0)
+367
+        if (n < BREAK_0) {
+372
+        if (n < BREAK_1) {
+396
+        if (rand_type == TYPE_0)
+431
+        if (rand_type == TYPE_0)
+450
+        if (rand_type != TYPE_0) {
+481
+        if (rand_type == TYPE_0) {
+491
+                if (++f >= end_ptr) {

@@ -1,0 +1,4 @@
+/Northeast$/w region.northeast
+/South$/w region.south
+/Midwest$/w region.midwest
+/West$/w region.west
