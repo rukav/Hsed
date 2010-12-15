@@ -44,9 +44,9 @@ parseArgs xs = parseArgs' xs ([],[]) where
          addCmd (files, cmds) x = (files, cmds ++ ('\n':x))
 
 usage = unlines help 
-  where help = ["usage: Sedhs [-n] script [file...]",
-                "       Sedhs [-n] -e script [-e script]... [-f script_file]... [file...]",
-                "       Sedhs [-n] [-e script]... -f script_file [-f script_file]... [file...]"
+  where help = ["usage: Sed [-n] script [file...]",
+                "       Sed [-n] -e script [-e script]... [-f script_file]... [file...]",
+                "       Sed [-n] [-e script]... -f script_file [-f script_file]... [file...]"
                ]
 
 noFlag :: String -> ([FilePath], String) -> SedState ([FilePath], String)
