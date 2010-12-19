@@ -10,6 +10,7 @@ import StreamEd
 import SedState
 import System.Console.CmdArgs
 import Data.List (isPrefixOf)
+import qualified Data.ByteString.Char8 as B
 import Parsec (parseSed, sedCmds)
 
 data Config = Config {
@@ -32,10 +33,6 @@ config = cmdArgsMode $ Config
 
 data Result = OK | Diff String | Error String 
   deriving (Show, Eq, Typeable)
-
-openFileError f e = 
-  putStr ("Error: Couldn't open " ++ f ++ ": " ++ show (e :: E.IOException)) >>
-  return ""
 
 main :: IO ()
 main = do
@@ -85,13 +82,13 @@ testFile script inext okext = do
            ) initEnv
     okf <- readFile okfile `catch` openFileError okfile 
     let res = memorySpace_ env
-    if res == okf then 
+    if (B.unpack res) == okf then 
       putStrLn $ passed script
      else do
       putStrLn $ failed script  
       mapM_ print (lines okf)
       print "===>"
-      mapM_ print (lines $ memorySpace_ env)
+      mapM_ print (lines (B.unpack $ memorySpace_ env))
 
 testDir :: FilePath -> String -> String -> IO ()
 testDir dir inpext okext = do

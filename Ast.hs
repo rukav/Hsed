@@ -1,6 +1,7 @@
 module Ast where 
 import SedRegex
-
+import Data.ByteString.Char8
+--import qualified Data.ByteString.Lazy.Char8 as BS
 data SedCmd = SedCmd Address SedFun  deriving Show
 
 data SedFun = Group [SedCmd]
@@ -21,19 +22,19 @@ data SedFun = Group [SedCmd]
             | PrintPat                  --  p
             | WriteUpPat                --  P    
             | Quit                      --  q
-            | ReadFile File             --  r file
+            | ReadFile FilePath         --  r file
             | Substitute  Pattern Replacement Flags  -- s/BRE/replacement/flags
             | Test (Maybe Label)        --  t [label]
-            | WriteFile File            --  w file
+            | WriteFile FilePath        --  w file
             | Exchange                  --  x
             | Transform Text Text       --  y/string1/string2
-            | Label String              --  :label
+            | Label Label               --  :label
             | Comment                   --  #
             | EmptyCmd                  --  
     deriving Show
 
-data PatternSpace = PatternSpace [String] deriving Show
-data HoldSpace = HoldSpace [String] deriving Show
+data PatternSpace = PatternSpace [ByteString] deriving Show
+data HoldSpace = HoldSpace [ByteString] deriving Show
             
 data Addr = LineNumber Int
           | LastLine
@@ -51,11 +52,10 @@ data OccurrencePrint = OccurrencePrint (Maybe Occurrence) OutputPat |
                        PrintOccurrence OutputPat (Maybe Occurrence)
     deriving Show
  
-data Flags = Flags (Maybe OccurrencePrint) (Maybe File) 
+data Flags = Flags (Maybe OccurrencePrint) (Maybe FilePath) 
     deriving Show
 
-type Replacement = String 
+type Replacement = ByteString
 type Invert = Bool
-type Text = String
-type Label = String
-type File = String
+type Text = ByteString
+type Label = ByteString

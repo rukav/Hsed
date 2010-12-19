@@ -1,0 +1,1421 @@
+=============================================================================== 
+      Sybase Adaptive Server Enterprise System Performance Report
+=============================================================================== 
+ 
+Server Version:        Adaptive Server Enterprise/15.0.3/EBF 16548 ESD#1/P/Sun_ 
+Server Name:           GPAS_PERF                                                
+Run Date:              Mar 10, 2010                                             
+Sampling Started at:   Mar 10, 2010 09:52:37                                    
+Sampling Ended at:     Mar 10, 2010 09:53:37                                    
+Sample Interval:       00:01:00                                                 
+Sample Mode:           No Clear                                                 
+Counters Last Cleared: Mar 09, 2010 14:34:07                                    
+ 
+=============================================================================== 
+ 
+Kernel Utilization
+------------------
+ 
+  Your Runnable Process Search Count is set to 2000                             
+  and I/O Polling Process Count is set to 10                                    
+ 
+  Engine Busy Utilization        CPU Busy   I/O Busy       Idle                 
+  ------------------------       --------   --------   --------    
+    Engine 0                        0.0 %      0.0 %    100.0 %              
+    Engine 1                        0.0 %      0.0 %    100.0 %              
+    Engine 2                        0.0 %      0.0 %    100.0 %              
+    Engine 3                        0.0 %      0.0 %    100.0 %              
+    Engine 4                        0.0 %      0.0 %    100.0 %              
+    Engine 5                        0.0 %      0.0 %    100.0 %              
+    Engine 6                        0.0 %      0.0 %    100.0 %              
+    Engine 7                        0.0 %      0.0 %    100.0 %              
+    Engine 8                        0.3 %      0.2 %     99.5 %              
+    Engine 9                        0.0 %      0.0 %    100.0 %              
+    Engine 10                       0.0 %      0.0 %    100.0 %              
+    Engine 11                       0.0 %      0.0 %    100.0 %              
+    Engine 12                       0.0 %      0.0 %    100.0 %              
+    Engine 13                       0.0 %      0.0 %    100.0 %              
+    Engine 14                       0.0 %      0.0 %    100.0 %              
+  ------------------------       --------   --------   --------    
+  Summary           Total           0.3 %      0.2 %   1499.5 %              
+                  Average           0.0 %      0.0 %    100.0 %              
+ 
+  CPU Yields by Engine            per sec      per xact       count  % of total
+  -------------------------  ------------  ------------  ----------  ---------- 
+    Engine 0                         58.6         270.4        3515       6.6 %
+    Engine 1                         59.2         273.1        3550       6.7 %
+    Engine 2                         59.1         272.8        3547       6.7 %
+    Engine 3                         59.1         272.9        3548       6.7 %
+    Engine 4                         59.1         272.8        3547       6.7 %
+    Engine 5                         59.1         272.8        3547       6.7 %
+    Engine 6                         59.1         272.9        3548       6.7 %
+    Engine 7                         59.2         273.2        3551       6.7 %
+    Engine 8                         58.9         272.0        3536       6.6 %
+    Engine 9                         59.2         273.2        3551       6.7 %
+    Engine 10                        59.2         273.2        3551       6.7 %
+    Engine 11                        59.2         273.1        3550       6.7 %
+    Engine 12                        59.2         273.1        3550       6.7 %
+    Engine 13                        59.2         273.2        3551       6.7 %
+    Engine 14                        59.2         273.0        3549       6.7 %
+  -------------------------  ------------  ------------  ----------
+  Total CPU Yields                  886.5        4091.6       53191             
+ 
+  Network Checks
+    Non-Blocking                  19724.6       91036.8     1183478      95.7 %
+    Blocking                        885.4        4086.2       53121       4.3 %
+  -------------------------  ------------  ------------  ----------
+  Total Network I/O Checks        20610.0       95123.0     1236599             
+  Avg Net I/Os per Check              n/a           n/a     0.00000       n/a   
+ 
+  Disk I/O Checks
+    Total Disk I/O Checks         21218.8       97933.1     1273130       n/a   
+    Checks Returning I/O           1343.3        6199.6       80595       6.3 %
+    Avg Disk I/Os Returned            n/a           n/a     0.00293       n/a   
+ 
+  Tuning Recommendations for Kernel Utilization                                 
+  ---------------------------------------------                                 
+  - Consider decreasing the 'runnable process search count'
+    configuration parameter if you require the CPU's on
+    the machine to be used for other applications.
+ 
+ 
+=============================================================================== 
+ 
+Worker Process Management
+-------------------------
+                                  per sec      per xact       count  % of total
+                             ------------  ------------  ----------  ---------- 
+ Worker Process Requests
+   Total Requests                     0.0           0.0           0       n/a   
+ 
+ Worker Process Usage
+   Total Used                         0.0           0.0           0       n/a   
+   Max Ever Used During Sample        0.0           0.0           0       n/a   
+ 
+ Memory Requests for Worker Processes
+   Total Requests                     0.0           0.0           0       n/a   
+ 
+ Tuning Recommendations for Worker Processes                                    
+ -------------------------------------------                                    
+  - Consider decreasing the 'number of worker processes'
+    configuration parameter.
+ 
+ 
+=============================================================================== 
+ 
+Parallel Query Management
+-------------------------
+ 
+  Parallel Query Usage            per sec      per xact       count  % of total
+  -------------------------  ------------  ------------  ----------  ---------- 
+  Total Parallel Queries              0.0           0.0           0       n/a   
+ 
+  Merge Lock Requests             per sec      per xact       count  % of total
+  -------------------------  ------------  ------------  ----------  ---------- 
+  Total # of Requests                 0.0           0.0           0       n/a   
+ 
+  Sort Buffer Waits               per sec      per xact       count  % of total
+  -------------------------  ------------  ------------  ----------  ---------- 
+  Total # of Waits                    0.0           0.0           0       n/a   
+ 
+=============================================================================== 
+ 
+Task Management                   per sec      per xact       count  % of total
+---------------------------  ------------  ------------  ----------  ---------- 
+ 
+  Connections Opened                  0.0           0.0           0       n/a   
+ 
+  Task Context Switches by Engine
+    Engine 0                          3.7          17.2         223      33.8 %
+    Engine 1                          0.3           1.3          17       2.6 %
+    Engine 2                          0.3           1.3          17       2.6 %
+    Engine 3                          1.9           8.9         116      17.6 %
+    Engine 4                          0.4           1.9          25       3.8 %
+    Engine 5                          0.3           1.3          17       2.6 %
+    Engine 6                          0.3           1.3          17       2.6 %
+    Engine 7                          0.3           1.4          18       2.7 %
+    Engine 8                          1.7           8.0         104      15.8 %
+    Engine 9                          0.3           1.4          18       2.7 %
+    Engine 10                         0.3           1.3          17       2.6 %
+    Engine 11                         0.3           1.3          17       2.6 %
+    Engine 12                         0.3           1.3          17       2.6 %
+    Engine 13                         0.3           1.4          18       2.7 %
+    Engine 14                         0.3           1.4          18       2.7 %
+  -------------------------  ------------  ------------  ----------
+    Total Task Switches:             11.0          50.7         659             
+ 
+  Task Context Switches Due To:
+    Voluntary Yields                  8.2          37.7         490      74.4 %
+    Cache Search Misses               0.3           1.5          19       2.9 %
+    Exceeding I/O batch size          0.0           0.0           0       0.0 %
+    System Disk Writes                0.4           2.0          26       3.9 %
+    Logical Lock Contention           0.0           0.0           0       0.0 %
+    Address Lock Contention           0.0           0.0           0       0.0 %
+    Latch Contention                  0.0           0.0           0       0.0 %
+    Log Semaphore Contention          0.0           0.0           0       0.0 %
+    PLC Lock Contention               0.0           0.0           0       0.0 %
+    Group Commit Sleeps               0.0           0.0           0       0.0 %
+    Last Log Page Writes              0.1           0.5           6       0.9 %
+    Modify Conflicts                  0.0           0.0           0       0.0 %
+    I/O Device Contention             0.0           0.0           0       0.0 %
+    Network Packet Received           0.0           0.0           0       0.0 %
+    Network Packet Sent               0.0           0.0           0       0.0 %
+    Network services                  0.0           0.0           0       0.0 %
+    Other Causes                      2.0           9.1         118      17.9 %
+ 
+ 
+=============================================================================== 
+ 
+Application Management
+----------------------
+ 
+  Application Statistics Summary (All Applications)
+  -------------------------------------------------
+  Priority Changes                per sec      per xact       count  % of total
+  -------------------------  ------------  ------------  ----------  ---------- 
+    To High Priority                  0.0           0.0           0       0.0 %
+    To Medium Priority                0.5           2.2          29      50.0 %
+    To Low Priority                   0.5           2.2          29      50.0 %
+  -------------------------  ------------  ------------  ----------
+  Total Priority Changes              1.0           4.5          58             
+ 
+  Allotted Slices Exhausted       per sec      per xact       count  % of total
+  -------------------------  ------------  ------------  ----------  ---------- 
+  Total Slices Exhausted              0.0           0.0           0       n/a   
+ 
+  Skipped Tasks By Engine         per sec      per xact       count  % of total
+  -------------------------  ------------  ------------  ----------  ---------- 
+  Total Engine Skips                  0.0           0.0           0       n/a   
+ 
+  Engine Scope Changes                0.0           0.0           0       n/a   
+ 
+=============================================================================== 
+ 
+ESP Management                    per sec      per xact       count  % of total
+---------------------------  ------------  ------------  ----------  ---------- 
+  ESP Requests                        0.0           0.0           0       n/a   
+=============================================================================== 
+ 
+Housekeeper Task Activity
+-------------------------
+                                  per sec      per xact       count  % of total
+                             ------------  ------------  ----------             
+Buffer Cache Washes                                                             
+  Clean                            114.1         526.4        6843      99.2 % 
+  Dirty                              0.9           4.0          52       0.8 % 
+                             ------------  ------------  ----------             
+Total Washes                       114.9         530.4        6895              
+ 
+Garbage Collections                  3.0          13.8         180       n/a    
+Pages Processed in GC                0.0           0.0           0       n/a    
+ 
+Statistics Updates                   0.5           2.3          30       n/a    
+ 
+  Tuning Recommendations for Housekeeper                                        
+  --------------------------------------                                        
+  - Consider increasing the 'housekeeper free write percent'
+    configuration parameter.
+ 
+=============================================================================== 
+ 
+Monitor Access to Executing SQL
+-------------------------------
+                                  per sec      per xact       count  % of total
+                             ------------  ------------  ----------  ---------- 
+ Waits on Execution Plans            0.0           0.0           0       n/a    
+ Number of SQL Text Overflows        0.0           0.0           0       n/a    
+ Maximum SQL Text Requested          n/a           n/a           0       n/a    
+  (since beginning of sample)                                                   
+ 
+ 
+ Tuning Recommendations for Monitor Access to Executing SQL                     
+ ----------------------------------------------------------                     
+ - Consider decreasing the 'max SQL text monitored' parameter 
+   to 4096 (i.e., half way from its current value to Maximum 
+   SQL Text Requested).
+ 
+=============================================================================== 
+ 
+Transaction Profile
+-------------------
+ 
+  Transaction Summary             per sec      per xact       count  % of total
+  -------------------------  ------------  ------------  ----------  ---------- 
+    Committed Xacts                   0.2           n/a          13     n/a     
+ 
+  Transaction Detail              per sec      per xact       count  % of total
+  -------------------------  ------------  ------------  ----------  ---------- 
+    Inserts
+      APL Heap Table                381.1        1758.8       22865      50.7 %
+      APL Clustered Table             0.0           0.0           0       0.0 %
+      Data Only Lock Table          370.0        1707.7       22200      49.3 %
+      Fast Bulk Insert                0.0           0.0           0       0.0 %
+  -------------------------  ------------  ------------  ----------  ---------- 
+    Total Rows Inserted             751.1        3466.5       45065     100.0 %
+ 
+    Updates
+      Total Rows Updated              0.0           0.0           0       n/a   
+  -------------------------  ------------  ------------  ----------  ---------- 
+    Total Rows Updated                0.0           0.0           0       0.0 %
+ 
+    Data Only Locked Updates
+      Total Rows Updated              0.0           0.0           0       n/a   
+  -------------------------  ------------  ------------  ----------  ---------- 
+    Total DOL Rows Updated            0.0           0.0           0       0.0 %
+ 
+    Deletes
+      Total Rows Deleted              0.0           0.0           0       n/a   
+  =========================  ============  ============  ==========
+    Total Rows Affected             751.1        3466.5       45065             
+ 
+=============================================================================== 
+ 
+Transaction Management
+----------------------
+ 
+  ULC Flushes to Xact Log         per sec      per xact       count  % of total
+  -------------------------  ------------  ------------  ----------  ---------- 
+    by Full ULC                       0.0           0.1           1       7.1 %
+    by End Transaction                0.1           0.5           7      50.0 %
+    by Change of Database             0.0           0.2           2      14.3 %
+    by Single Log Record              0.0           0.2           2      14.3 %
+    by Unpin                          0.0           0.2           2      14.3 %
+    by Other                          0.0           0.0           0       0.0 %
+  -------------------------  ------------  ------------  ----------
+  Total ULC Flushes                   0.2           1.1          14             
+ 
+  ULC Flushes Skipped             per sec      per xact       count  % of total
+  -------------------------  ------------  ------------  ----------  ---------- 
+    by PLC Discards                   0.2           0.7           9     100.0 %
+  -------------------------  ------------  ------------  ----------
+  Total ULC Discards                  0.2           0.7           9             
+ 
+  ULC Log Records                     1.4           6.3          82       n/a   
+  Max ULC Size During Sample          n/a           n/a           0       n/a   
+ 
+  ULC Semaphore Requests
+    Granted                           2.8          12.8         166     100.0 %
+    Waited                            0.0           0.0           0       0.0 %
+  -------------------------  ------------  ------------  ----------
+  Total ULC Semaphore Req             2.8          12.8         166             
+ 
+  Log Semaphore Requests
+    Granted                           0.5           2.2          28     100.0 %
+    Waited                            0.0           0.0           0       0.0 %
+  -------------------------  ------------  ------------  ----------
+  Total Log Semaphore Req             0.5           2.2          28             
+ 
+  Transaction Log Writes              0.1           0.6           8       n/a   
+  Transaction Log Alloc               0.1           0.2           3       n/a   
+  Avg # Writes per Log Page           n/a           n/a     2.66667       n/a   
+ 
+=============================================================================== 
+ 
+Index Management
+----------------
+ 
+  Nonclustered Maintenance        per sec      per xact       count  % of total
+  -------------------------  ------------  ------------  ----------  ---------- 
+    Ins/Upd Requiring Maint           0.0           0.0           0       n/a   
+      # of NC Ndx Maint               0.0           0.0           0       n/a   
+ 
+    Deletes Requiring Maint           0.0           0.0           0       n/a   
+      # of NC Ndx Maint               0.0           0.0           0       n/a   
+ 
+    RID Upd from Clust Split          0.0           0.0           0       n/a   
+      # of NC Ndx Maint               0.0           0.0           0       n/a   
+ 
+    Upd/Del DOL Req Maint             0.0           0.0           0       n/a   
+      # of DOL Ndx Maint              0.0           0.0           0       n/a   
+ 
+  Page Splits                         0.0           0.0           0       n/a   
+ 
+  Page Shrinks                        0.0           0.0           0       n/a   
+ 
+  Index Scans                     per sec      per xact       count  % of total
+  -------------------------  ------------  ------------  ----------  ---------- 
+    Ascending Scans                  20.9          96.3        1252      90.3 %
+    DOL Ascending Scans               2.2          10.1         131       9.5 %
+    Descending Scans                  0.1           0.2           3       0.2 %
+    DOL Descending Scans              0.0           0.0           0       0.0 %
+                             ------------  ------------  ----------             
+    Total Scans                      23.1         106.6        1386             
+ 
+Msg 11039, Level 16, State 1:
+Server 'GPAS_PERF', Procedure 'sp_exec_SQL', Line 49:
+Another Execute Immediate statement cannot be executed inside an Execute
+Immediate statement.
+(0 rows affected)
+ 
+=============================================================================== 
+ 
+Lock Management
+---------------
+ 
+  Lock Summary                    per sec      per xact       count  % of total
+  -------------------------  ------------  ------------  ----------  ---------- 
+  Total Lock Requests                81.4         375.8        4885       n/a   
+  Avg Lock Contention                 0.0           0.0           0       0.0 %
+  Deadlock Percentage                 0.0           0.0           0       0.0 %
+ 
+  Lock Detail                     per sec      per xact       count  % of total
+  -------------------------  ------------  ------------  ----------  ---------- 
+ 
+  Table Lock Hashtable
+    Lookups                           2.4          11.0         143       n/a   
+    Avg Chain Length                  n/a           n/a     0.41259       n/a   
+    Spinlock Contention               n/a           n/a         n/a       0.0 %
+ 
+  Exclusive Table
+    Total EX-Table Requests           0.0           0.0           0       n/a   
+ 
+  Shared Table
+    Total SH-Table Requests           0.0           0.0           0       n/a   
+ 
+  Exclusive Intent
+    Granted                           0.2           1.0          13     100.0 %
+    Waited                            0.0           0.0           0       0.0 %
+  -------------------------  ------------  ------------  ----------  ---------- 
+  Total EX-Intent Requests            0.2           1.0          13       0.3 %
+ 
+  Shared Intent
+    Granted                           2.2          10.0         130     100.0 %
+    Waited                            0.0           0.0           0       0.0 %
+  -------------------------  ------------  ------------  ----------  ---------- 
+  Total SH-Intent Requests            2.2          10.0         130       2.7 %
+ 
+  Page & Row Lock HashTable
+    Lookups                          33.1         152.7        1985       n/a   
+    Avg Chain Length                  n/a           n/a     0.00151       n/a   
+    Spinlock Contention               n/a           n/a         n/a       0.0 %
+ 
+  Exclusive Page
+    Granted                           0.2           0.8          10     100.0 %
+    Waited                            0.0           0.0           0       0.0 %
+  -------------------------  ------------  ------------  ----------  ---------- 
+  Total EX-Page Requests              0.2           0.8          10       0.2 %
+ 
+  Update Page
+    Total UP-Page Requests            0.0           0.0           0       n/a   
+ 
+  Shared Page
+    Granted                          21.0          97.1        1262     100.0 %
+    Waited                            0.0           0.0           0       0.0 %
+  -------------------------  ------------  ------------  ----------  ---------- 
+  Total SH-Page Requests             21.0          97.1        1262      25.8 %
+ 
+ 
+  Exclusive Row
+    Granted                           0.0           0.1           1     100.0 %
+    Waited                            0.0           0.0           0       0.0 %
+  -------------------------  ------------  ------------  ----------  ---------- 
+  Total EX-Row Requests               0.0           0.1           1       0.0 %
+ 
+  Update Row
+    Granted                           0.1           0.2           3     100.0 %
+    Waited                            0.0           0.0           0       0.0 %
+  -------------------------  ------------  ------------  ----------  ---------- 
+  Total UP-Row Requests               0.1           0.2           3       0.1 %
+ 
+  Shared Row
+    Granted                          11.6          53.3         693     100.0 %
+    Waited                            0.0           0.0           0       0.0 %
+  -------------------------  ------------  ------------  ----------  ---------- 
+  Total SH-Row Requests              11.6          53.3         693      14.2 %
+ 
+ 
+  Next-Key
+    Total Next-Key Requests           0.0           0.0           0       n/a   
+ 
+  Address Lock Hashtable
+    Lookups                          46.2         213.3        2773       n/a   
+    Avg Chain Length                  n/a           n/a     0.00000       n/a   
+    Spinlock Contention               n/a           n/a         n/a       0.0 %
+ 
+  Exclusive Address
+    Granted                           0.2           0.9          12     100.0 %
+    Waited                            0.0           0.0           0       0.0 %
+  -------------------------  ------------  ------------  ----------  ---------- 
+  Total EX-Address Requests           0.2           0.9          12       0.2 %
+ 
+  Shared Address
+    Granted                          46.0         212.4        2761     100.0 %
+    Waited                            0.0           0.0           0       0.0 %
+  -------------------------  ------------  ------------  ----------  ---------- 
+  Total SH-Address Requests          46.0         212.4        2761      56.5 %
+ 
+ 
+  Last Page Locks on Heaps
+    Granted                         381.1        1758.8       22865     100.0 %
+    Waited                            0.0           0.0           0       0.0 %
+  -------------------------  ------------  ------------  ----------  ---------- 
+  Total Last Pg Locks               381.1        1758.8       22865     100.0 %
+ 
+ 
+  Deadlocks by Lock Type          per sec      per xact       count  % of total
+  -------------------------  ------------  ------------  ----------  ---------- 
+  Total Deadlocks                     0.0           0.0           0       n/a   
+ 
+ 
+  Deadlock Detection
+    Deadlock Searches                 0.0           0.0           0       n/a   
+ 
+ 
+  Lock Promotions
+    Total Lock Promotions             0.0           0.0           0       n/a   
+ 
+ 
+  Lock Timeouts by Lock Type      per sec      per xact       count  % of total
+  -------------------------  ------------  ------------  ----------  ---------- 
+  Total Timeouts                      0.0           0.0           0       n/a   
+ 
+ 
+=============================================================================== 
+ 
+Data Cache Management
+---------------------
+ 
+  Cache Statistics Summary (All Caches)
+  -------------------------------------
+                                  per sec      per xact       count  % of total
+                             ------------  ------------  ----------  ----------
+ 
+    Cache Search Summary
+      Total Cache Hits              945.7        4364.5       56739     100.0 %
+      Total Cache Misses              0.3           1.5          20       0.0 %
+  -------------------------  ------------  ------------  ----------
+    Total Cache Searches            946.0        4366.1       56759             
+ 
+    Cache Turnover
+      Buffers Grabbed                 3.4          15.8         206       n/a   
+      Buffers Grabbed Dirty           0.0           0.0           0       0.0 %
+ 
+    Cache Strategy Summary
+      Cached (LRU) Buffers          975.0        4500.1       58501     100.0 %
+      Discarded (MRU) Buffers         0.0           0.0           0       0.0 %
+ 
+    Large I/O Usage
+      Large I/Os Performed            0.9           4.1          53     100.0 %
+ 
+      Large I/Os Denied due to                                                  
+        Pool < Prefetch Size          0.0           0.0           0       0.0 %
+        Pages Requested                                                         
+        Reside in Another                                                       
+        Buffer Pool                   0.0           0.0           0       0.0 %
+  -------------------------  ------------  ------------  ----------
+    Total Large I/O Requests          0.9           4.1          53             
+ 
+    Large I/O Effectiveness
+      Pages by Lrg I/O Cached         7.0          32.2         418       n/a   
+      Pages by Lrg I/O Used           7.0          32.2         418     100.0 %
+ 
+    Asynchronous Prefetch Activity
+      APFs Issued                     2.2          10.2         132      95.0 %
+      APFs Denied Due To                                                        
+        APF I/O Overloads             0.0           0.0           0       0.0 %
+        APF Limit Overloads           0.0           0.0           0       0.0 %
+        APF Reused Overloads          0.0           0.0           0       0.0 %
+      APF Buffers Found in Cache                                                
+        With Spinlock Held            0.0           0.0           0       0.0 %
+        W/o Spinlock Held             0.1           0.5           7       5.0 %
+  -------------------------  ------------  ------------  ----------
+    Total APFs Requested              2.3          10.7         139             
+ 
+    Other Asynchronous Prefetch Statistics
+      APFs Used                       2.2          10.2         132       n/a   
+      APF Waits for I/O               0.9           4.0          52       n/a   
+      APF Discards                    0.0           0.0           0       n/a   
+ 
+    Dirty Read Behavior
+      Page Requests                   0.0           0.0           0       n/a   
+ 
+------------------------------------------------------------------------------- 
+  Cache: dbcc_cache
+                                  per sec      per xact       count  % of total
+  -------------------------  ------------  ------------  ----------  ---------- 
+    Spinlock Contention               n/a           n/a         n/a       0.0 %
+ 
+    Utilization                       n/a           n/a         n/a       0.0 %
+ 
+    Cache Searches
+      Total Cache Searches            0.0           0.0           0       n/a
+  -------------------------  ------------  ------------  ----------
+    Total Cache Searches              0.0           0.0           0
+ 
+    Pool Turnover                     0.0           0.0           0       n/a
+ 
+    Buffer Wash Behavior
+      Statistics Not Available - No Buffers Entered Wash Section Yet
+ 
+    Cache Strategy
+      Statistics Not Available - No Buffers Displaced Yet
+ 
+    Large I/O Usage
+      Total Large I/O Requests        0.0           0.0           0       n/a
+ 
+    Large I/O Detail
+     16  Kb Pool
+        Pages Cached                  0.0           0.0           0       n/a   
+        Pages Used                    0.0           0.0           0       n/a   
+ 
+    Dirty Read Behavior
+	  Page Requests               0.0           0.0           0       n/a
+ 
+    Tuning Recommendations for Data cache : dbcc_cache
+    -------------------------------------                                       
+    - Consider removing the 16k pool for this cache.
+ 
+------------------------------------------------------------------------------- 
+  Cache: default data cache
+                                  per sec      per xact       count  % of total
+  -------------------------  ------------  ------------  ----------  ---------- 
+    Spinlock Contention               n/a           n/a         n/a       0.0 %
+ 
+    Utilization                       n/a           n/a         n/a     100.0 %
+ 
+    Cache Searches
+      Cache Hits                    945.7        4364.5       56739     100.0 %
+         Found in Wash                0.1           0.4           5       0.0 %
+      Cache Misses                    0.3           1.5          20       0.0 %
+  -------------------------  ------------  ------------  ----------
+    Total Cache Searches            946.0        4366.1       56759
+ 
+    Pool Turnover
+      2  Kb Pool
+          LRU Buffer Grab             2.6          11.8         153      74.3 %
+            Grabbed Dirty             0.0           0.0           0       0.0 %
+      4  Kb Pool
+          LRU Buffer Grab             0.0           0.1           1       0.5 %
+            Grabbed Dirty             0.0           0.0           0       0.0 %
+      16 Kb Pool
+          LRU Buffer Grab             0.9           4.0          52      25.2 %
+            Grabbed Dirty             0.0           0.0           0       0.0 %
+  -------------------------  ------------  ------------  ----------
+    Total Cache Turnover              3.4          15.8         206
+ 
+    Buffer Wash Behavior
+      Statistics Not Available - No Buffers Entered Wash Section Yet
+ 
+    Cache Strategy
+      Cached (LRU) Buffers          975.0        4500.1       58501     100.0 %
+      Discarded (MRU) Buffers         0.0           0.0           0       0.0 %
+ 
+    Large I/O Usage
+      Large I/Os Performed            0.9           4.1          53     100.0 %
+ 
+      Large I/Os Denied due to
+        Pool < Prefetch Size          0.0           0.0           0       0.0 %
+        Pages Requested
+        Reside in Another
+        Buffer Pool                   0.0           0.0           0       0.0 %
+  -------------------------  ------------  ------------  ----------
+    Total Large I/O Requests          0.9           4.1          53
+ 
+    Large I/O Detail
+     4   Kb Pool
+        Pages Cached                  0.0           0.2           2       n/a
+        Pages Used                    0.1           0.2           3     150.0 %
+     16  Kb Pool
+        Pages Cached                  6.9          32.0         416       n/a
+        Pages Used                    6.9          31.9         415      99.8 %
+ 
+    Dirty Read Behavior
+	  Page Requests               0.0           0.0           0       n/a
+ 
+    Tuning Recommendations for Data cache : default data cache
+    -------------------------------------                                       
+    - Consider using 'relaxed LRU replacement policy'
+      for this cache.
+ 
+------------------------------------------------------------------------------- 
+  Cache: tempdb_cache
+                                  per sec      per xact       count  % of total
+  -------------------------  ------------  ------------  ----------  ---------- 
+    Spinlock Contention               n/a           n/a         n/a       0.0 %
+ 
+    Utilization                       n/a           n/a         n/a       0.0 %
+ 
+    Cache Searches
+      Total Cache Searches            0.0           0.0           0       n/a
+  -------------------------  ------------  ------------  ----------
+    Total Cache Searches              0.0           0.0           0
+ 
+    Pool Turnover                     0.0           0.0           0       n/a
+ 
+    Buffer Wash Behavior
+      Statistics Not Available - No Buffers Entered Wash Section Yet
+ 
+    Cache Strategy
+      Statistics Not Available - No Buffers Displaced Yet
+ 
+    Large I/O Usage
+      Total Large I/O Requests        0.0           0.0           0       n/a
+ 
+    Large I/O Detail
+     4   Kb Pool
+        Pages Cached                  0.0           0.0           0       n/a   
+        Pages Used                    0.0           0.0           0       n/a   
+     16  Kb Pool
+        Pages Cached                  0.0           0.0           0       n/a   
+        Pages Used                    0.0           0.0           0       n/a   
+ 
+    Dirty Read Behavior
+	  Page Requests               0.0           0.0           0       n/a
+ 
+    Tuning Recommendations for Data cache : tempdb_cache
+    -------------------------------------                                       
+    - Consider using 'relaxed LRU replacement policy'
+      for this cache.
+ 
+    - Consider removing the 4k pool for this cache.
+ 
+    - Consider removing the 16k pool for this cache.
+ 
+=============================================================================== 
+ 
+Procedure Cache Management        per sec      per xact       count  % of total
+---------------------------  ------------  ------------  ----------  ---------- 
+  Procedure Requests                  0.0           0.1           1       n/a   
+  Procedure Reads from Disk           0.0           0.1           1     100.0 %
+  Procedure Writes to Disk            0.0           0.0           0       0.0 %
+  Procedure Removals                  0.0           0.1           1       n/a   
+  Procedure Recompilations            0.0           0.0           0       n/a   
+ 
+  SQL Statement Cache:
+    Statements Cached                 0.0           0.0           0       n/a   
+    Statements Found in Cache         0.0           0.0           0       n/a   
+    Statements Not Found              0.0           0.0           0       n/a   
+    Statements Dropped                0.0           0.0           0       n/a   
+    Statements Restored               0.0           0.0           0       n/a   
+    Statements Not Cached             0.0           0.0           0       n/a   
+ 
+  Tuning Recommendations for Procedure cache management                         
+  -----------------------------------------------------                         
+  - Consider increasing the 'procedure cache size'
+    configuration parameter.
+ 
+ 
+=============================================================================== 
+ 
+Memory Management                 per sec      per xact       count  % of total
+---------------------------  ------------  ------------  ----------  ---------- 
+  Pages Allocated                     1.2           5.5          72       n/a   
+  Pages Released                      1.2           5.5          72       n/a   
+ 
+=============================================================================== 
+ 
+Recovery Management
+-------------------
+ 
+  Checkpoints                     per sec      per xact       count  % of total
+  -------------------------  ------------  ------------  ----------  ---------- 
+    # of Normal Checkpoints           0.0           0.2           2     100.0 %
+    # of Free Checkpoints             0.0           0.0           0       0.0 %
+  -------------------------  ------------  ------------  ----------             
+  Total Checkpoints                   0.0           0.2           2             
+ 
+  Avg Time per Normal Chkpt       0.00000 seconds                               
+ 
+=============================================================================== 
+ 
+Disk I/O Management
+-------------------
+ 
+  Max Outstanding I/Os            per sec      per xact       count  % of total
+  -------------------------  ------------  ------------  ----------  ---------- 
+    Server                            n/a           n/a          30       n/a   
+    Engine 0                          n/a           n/a          50       n/a   
+    Engine 1                          n/a           n/a          41       n/a   
+    Engine 2                          n/a           n/a          34       n/a   
+    Engine 3                          n/a           n/a         200       n/a   
+    Engine 4                          n/a           n/a          35       n/a   
+    Engine 5                          n/a           n/a          59       n/a   
+    Engine 6                          n/a           n/a          36       n/a   
+    Engine 7                          n/a           n/a          45       n/a   
+    Engine 8                          n/a           n/a          39       n/a   
+    Engine 9                          n/a           n/a         216       n/a   
+    Engine 10                         n/a           n/a          39       n/a   
+    Engine 11                         n/a           n/a          39       n/a   
+    Engine 12                         n/a           n/a          34       n/a   
+    Engine 13                         n/a           n/a          31       n/a   
+    Engine 14                         n/a           n/a          27       n/a   
+ 
+ 
+  I/Os Delayed by
+    Disk I/O Structures               n/a           n/a           0       n/a   
+    Server Config Limit               n/a           n/a           0       n/a   
+    Engine Config Limit               n/a           n/a           0       n/a   
+    Operating System Limit            n/a           n/a           0       n/a   
+ 
+ 
+  Total Requested Disk I/Os           3.9          18.1         235             
+ 
+  Completed Disk I/O's
+    Asynchronous I/O's
+      Engine 0                        0.0           0.0           0       0.0 %
+      Engine 1                        0.0           0.0           0       0.0 %
+      Engine 2                        0.0           0.0           0       0.0 %
+      Engine 3                        1.3           6.2          80      33.9 %
+      Engine 4                        0.1           0.3           4       1.7 %
+      Engine 5                        0.0           0.0           0       0.0 %
+      Engine 6                        0.0           0.0           0       0.0 %
+      Engine 7                        0.0           0.0           0       0.0 %
+      Engine 8                        2.5          11.7         152      64.4 %
+      Engine 9                        0.0           0.0           0       0.0 %
+      Engine 10                       0.0           0.0           0       0.0 %
+      Engine 11                       0.0           0.0           0       0.0 %
+      Engine 12                       0.0           0.0           0       0.0 %
+      Engine 13                       0.0           0.0           0       0.0 %
+      Engine 14                       0.0           0.0           0       0.0 %
+    Synchronous I/O's
+      Total Completed I/Os            0.0           0.0           0       n/a   
+  -------------------------  ------------  ------------  ----------             
+  Total Completed I/Os                3.9          18.2         236             
+ 
+ 
+  Device Activity Detail
+  ----------------------
+ 
+  Device:                                                                       
+    /sybase/syb-gpas-perf/dbdat01/dbccdb_data_01.dat                            
+    dbccdb_data_01                per sec      per xact       count  % of total
+  -------------------------  ------------  ------------  ----------  ---------- 
+    Reads                                                                       
+      APF                             0.0           0.0           0       0.0 %
+      Non-APF                         0.0           0.0           0       0.0 %
+    Writes                            0.0           0.1           1     100.0 %
+  -------------------------  ------------  ------------  ----------  ---------- 
+  Total I/Os                          0.0           0.1           1       0.4 %
+ 
+  Mirror Semaphore Granted            0.0           0.1           1     100.0 %
+  Mirror Semaphore Waited             0.0           0.0           0       0.0 %
+ 
+  ----------------------------------------------------------------------------- 
+ 
+  Device:                                                                       
+    /sybase/syb-gpas-perf/dbdat01/dbccdb_data_02.dat                            
+    dbccdb_data_02                per sec      per xact       count  % of total
+  -------------------------  ------------  ------------  ----------  ---------- 
+  Total I/Os                          0.0           0.0           0       n/a   
+  -------------------------  ------------  ------------  ----------  ---------- 
+  Total I/Os                          0.0           0.0           0       0.0 %
+ 
+ 
+  ----------------------------------------------------------------------------- 
+ 
+  Device:                                                                       
+    /sybase/syb-gpas-perf/dbdat01/devdata_01.dat                                
+    devdata_01                    per sec      per xact       count  % of total
+  -------------------------  ------------  ------------  ----------  ---------- 
+    Reads                                                                       
+      APF                             0.0           0.0           0       0.0 %
+      Non-APF                         0.0           0.0           0       0.0 %
+    Writes                            0.0           0.1           1     100.0 %
+  -------------------------  ------------  ------------  ----------  ---------- 
+  Total I/Os                          0.0           0.1           1       0.4 %
+ 
+  Mirror Semaphore Granted            0.0           0.1           1     100.0 %
+  Mirror Semaphore Waited             0.0           0.0           0       0.0 %
+ 
+  ----------------------------------------------------------------------------- 
+ 
+  Device:                                                                       
+    /sybase/syb-gpas-perf/dbdat01/devdata_02.dat                                
+    devdata_02                    per sec      per xact       count  % of total
+  -------------------------  ------------  ------------  ----------  ---------- 
+    Reads                                                                       
+      APF                             0.0           0.0           0       0.0 %
+      Non-APF                         0.0           0.0           0       0.0 %
+    Writes                            0.0           0.1           1     100.0 %
+  -------------------------  ------------  ------------  ----------  ---------- 
+  Total I/Os                          0.0           0.1           1       0.4 %
+ 
+  Mirror Semaphore Granted            0.0           0.1           1     100.0 %
+  Mirror Semaphore Waited             0.0           0.0           0       0.0 %
+ 
+  ----------------------------------------------------------------------------- 
+ 
+  Device:                                                                       
+    /sybase/syb-gpas-perf/dbdat01/devdata_03.dat                                
+    devdata_03                    per sec      per xact       count  % of total
+  -------------------------  ------------  ------------  ----------  ---------- 
+    Reads                                                                       
+      APF                             0.0           0.0           0       0.0 %
+      Non-APF                         0.0           0.0           0       0.0 %
+    Writes                            0.1           0.2           3     100.0 %
+  -------------------------  ------------  ------------  ----------  ---------- 
+  Total I/Os                          0.1           0.2           3       1.3 %
+ 
+  Mirror Semaphore Granted            0.1           0.2           3     100.0 %
+  Mirror Semaphore Waited             0.0           0.0           0       0.0 %
+ 
+  ----------------------------------------------------------------------------- 
+ 
+  Device:                                                                       
+    /sybase/syb-gpas-perf/dbdat01/master.dat                                    
+    master                        per sec      per xact       count  % of total
+  -------------------------  ------------  ------------  ----------  ---------- 
+    Reads                                                                       
+      APF                             0.0           0.0           0       0.0 %
+      Non-APF                         0.0           0.1           1       1.6 %
+    Writes                            1.0           4.6          60      98.4 %
+  -------------------------  ------------  ------------  ----------  ---------- 
+  Total I/Os                          1.0           4.7          61      25.8 %
+ 
+  Mirror Semaphore Granted            1.0           4.7          61     100.0 %
+  Mirror Semaphore Waited             0.0           0.0           0       0.0 %
+ 
+  ----------------------------------------------------------------------------- 
+ 
+  Device:                                                                       
+    /sybase/syb-gpas-perf/dbdat01/sybsecurity_data_01.dat                       
+    sybsecurity_data_01           per sec      per xact       count  % of total
+  -------------------------  ------------  ------------  ----------  ---------- 
+    Reads                                                                       
+      APF                             0.0           0.0           0       0.0 %
+      Non-APF                         0.0           0.0           0       0.0 %
+    Writes                            0.1           0.5           6     100.0 %
+  -------------------------  ------------  ------------  ----------  ---------- 
+  Total I/Os                          0.1           0.5           6       2.5 %
+ 
+  Mirror Semaphore Granted            0.1           0.5           6     100.0 %
+  Mirror Semaphore Waited             0.0           0.0           0       0.0 %
+ 
+  ----------------------------------------------------------------------------- 
+ 
+  Device:                                                                       
+    /sybase/syb-gpas-perf/dbdat01/sybsecurity_data_02.dat                       
+    sybsecurity_data_02           per sec      per xact       count  % of total
+  -------------------------  ------------  ------------  ----------  ---------- 
+    Reads                                                                       
+      APF                             0.0           0.0           0       0.0 %
+      Non-APF                         0.0           0.0           0       0.0 %
+    Writes                            0.0           0.2           2     100.0 %
+  -------------------------  ------------  ------------  ----------  ---------- 
+  Total I/Os                          0.0           0.2           2       0.8 %
+ 
+  Mirror Semaphore Granted            0.0           0.2           2     100.0 %
+  Mirror Semaphore Waited             0.0           0.0           0       0.0 %
+ 
+  ----------------------------------------------------------------------------- 
+ 
+  Device:                                                                       
+    /sybase/syb-gpas-perf/dbdat01/sybsecurity_data_03.dat                       
+    sybsecurity_data_03           per sec      per xact       count  % of total
+  -------------------------  ------------  ------------  ----------  ---------- 
+    Reads                                                                       
+      APF                             0.0           0.0           0       0.0 %
+      Non-APF                         0.0           0.0           0       0.0 %
+    Writes                            0.1           0.6           8     100.0 %
+  -------------------------  ------------  ------------  ----------  ---------- 
+  Total I/Os                          0.1           0.6           8       3.4 %
+ 
+  Mirror Semaphore Granted            0.1           0.6           8     100.0 %
+  Mirror Semaphore Waited             0.0           0.0           0       0.0 %
+ 
+  ----------------------------------------------------------------------------- 
+ 
+  Device:                                                                       
+    /sybase/syb-gpas-perf/dbdat01/sysprocsdev.dat                               
+    sysprocsdev                   per sec      per xact       count  % of total
+  -------------------------  ------------  ------------  ----------  ---------- 
+    Reads                                                                       
+      APF                             2.2          10.2         132      90.4 %
+      Non-APF                         0.2           1.0          13       8.9 %
+    Writes                            0.0           0.1           1       0.7 %
+  -------------------------  ------------  ------------  ----------  ---------- 
+  Total I/Os                          2.4          11.2         146      61.9 %
+ 
+  Mirror Semaphore Granted            2.4          11.2         146     100.0 %
+  Mirror Semaphore Waited             0.0           0.0           0       0.0 %
+ 
+  ----------------------------------------------------------------------------- 
+ 
+  Device:                                                                       
+    /sybase/syb-gpas-perf/dblog01/dbccdb_log_01.dat                             
+    dbccdb_log_01                 per sec      per xact       count  % of total
+  -------------------------  ------------  ------------  ----------  ---------- 
+  Total I/Os                          0.0           0.0           0       n/a   
+  -------------------------  ------------  ------------  ----------  ---------- 
+  Total I/Os                          0.0           0.0           0       0.0 %
+ 
+ 
+  ----------------------------------------------------------------------------- 
+ 
+  Device:                                                                       
+    /sybase/syb-gpas-perf/dblog01/devlog_01.dat                                 
+    devlog_01                     per sec      per xact       count  % of total
+  -------------------------  ------------  ------------  ----------  ---------- 
+  Total I/Os                          0.0           0.0           0       n/a   
+  -------------------------  ------------  ------------  ----------  ---------- 
+  Total I/Os                          0.0           0.0           0       0.0 %
+ 
+ 
+  ----------------------------------------------------------------------------- 
+ 
+  Device:                                                                       
+    /sybase/syb-gpas-perf/dblog01/devlog_02.dat                                 
+    devlog_02                     per sec      per xact       count  % of total
+  -------------------------  ------------  ------------  ----------  ---------- 
+  Total I/Os                          0.0           0.0           0       n/a   
+  -------------------------  ------------  ------------  ----------  ---------- 
+  Total I/Os                          0.0           0.0           0       0.0 %
+ 
+ 
+  ----------------------------------------------------------------------------- 
+ 
+  Device:                                                                       
+    /sybase/syb-gpas-perf/dblog01/devlog_03.dat                                 
+    devlog_03                     per sec      per xact       count  % of total
+  -------------------------  ------------  ------------  ----------  ---------- 
+  Total I/Os                          0.0           0.0           0       n/a   
+  -------------------------  ------------  ------------  ----------  ---------- 
+  Total I/Os                          0.0           0.0           0       0.0 %
+ 
+ 
+  ----------------------------------------------------------------------------- 
+ 
+  Device:                                                                       
+    /sybase/syb-gpas-perf/dblog01/devlog_04.dat                                 
+    devlog_04                     per sec      per xact       count  % of total
+  -------------------------  ------------  ------------  ----------  ---------- 
+  Total I/Os                          0.0           0.0           0       n/a   
+  -------------------------  ------------  ------------  ----------  ---------- 
+  Total I/Os                          0.0           0.0           0       0.0 %
+ 
+ 
+  ----------------------------------------------------------------------------- 
+ 
+  Device:                                                                       
+    /sybase/syb-gpas-perf/dblog01/devlog_05.dat                                 
+    devlog_05                     per sec      per xact       count  % of total
+  -------------------------  ------------  ------------  ----------  ---------- 
+  Total I/Os                          0.0           0.0           0       n/a   
+  -------------------------  ------------  ------------  ----------  ---------- 
+  Total I/Os                          0.0           0.0           0       0.0 %
+ 
+ 
+  ----------------------------------------------------------------------------- 
+ 
+  Device:                                                                       
+    /sybase/syb-gpas-perf/dblog01/devlog_06.dat                                 
+    devlog_06                     per sec      per xact       count  % of total
+  -------------------------  ------------  ------------  ----------  ---------- 
+  Total I/Os                          0.0           0.0           0       n/a   
+  -------------------------  ------------  ------------  ----------  ---------- 
+  Total I/Os                          0.0           0.0           0       0.0 %
+ 
+ 
+  ----------------------------------------------------------------------------- 
+ 
+  Device:                                                                       
+    /sybase/syb-gpas-perf/dblog01/sybsecurity_log_01.dat                        
+    sybsecurity_log_01            per sec      per xact       count  % of total
+  -------------------------  ------------  ------------  ----------  ---------- 
+  Total I/Os                          0.0           0.0           0       n/a   
+  -------------------------  ------------  ------------  ----------  ---------- 
+  Total I/Os                          0.0           0.0           0       0.0 %
+ 
+ 
+  ----------------------------------------------------------------------------- 
+ 
+  Device:                                                                       
+    /sybase/syb-gpas-perf/hperfdat01/hperfdata_01.dat                           
+    hperfdata_01                  per sec      per xact       count  % of total
+  -------------------------  ------------  ------------  ----------  ---------- 
+    Reads                                                                       
+      APF                             0.0           0.0           0       0.0 %
+      Non-APF                         0.0           0.0           0       0.0 %
+    Writes                            0.0           0.1           1     100.0 %
+  -------------------------  ------------  ------------  ----------  ---------- 
+  Total I/Os                          0.0           0.1           1       0.4 %
+ 
+  Mirror Semaphore Granted            0.0           0.1           1     100.0 %
+  Mirror Semaphore Waited             0.0           0.0           0       0.0 %
+ 
+  ----------------------------------------------------------------------------- 
+ 
+  Device:                                                                       
+    /sybase/syb-gpas-perf/hperfdat01/hperfdata_02.dat                           
+    hperfdata_02                  per sec      per xact       count  % of total
+  -------------------------  ------------  ------------  ----------  ---------- 
+  Total I/Os                          0.0           0.0           0       n/a   
+  -------------------------  ------------  ------------  ----------  ---------- 
+  Total I/Os                          0.0           0.0           0       0.0 %
+ 
+ 
+  ----------------------------------------------------------------------------- 
+ 
+  Device:                                                                       
+    /sybase/syb-gpas-perf/hperfdat01/hperfdata_03.dat                           
+    hperfdata_03                  per sec      per xact       count  % of total
+  -------------------------  ------------  ------------  ----------  ---------- 
+  Total I/Os                          0.0           0.0           0       n/a   
+  -------------------------  ------------  ------------  ----------  ---------- 
+  Total I/Os                          0.0           0.0           0       0.0 %
+ 
+ 
+  ----------------------------------------------------------------------------- 
+ 
+  Device:                                                                       
+    /sybase/syb-gpas-perf/hperfdat01/hperfdata_04.dat                           
+    hperfdata_04                  per sec      per xact       count  % of total
+  -------------------------  ------------  ------------  ----------  ---------- 
+  Total I/Os                          0.0           0.0           0       n/a   
+  -------------------------  ------------  ------------  ----------  ---------- 
+  Total I/Os                          0.0           0.0           0       0.0 %
+ 
+ 
+  ----------------------------------------------------------------------------- 
+ 
+  Device:                                                                       
+    /sybase/syb-gpas-perf/hperfdat01/hperfdata_05.dat                           
+    hperfdata_05                  per sec      per xact       count  % of total
+  -------------------------  ------------  ------------  ----------  ---------- 
+  Total I/Os                          0.0           0.0           0       n/a   
+  -------------------------  ------------  ------------  ----------  ---------- 
+  Total I/Os                          0.0           0.0           0       0.0 %
+ 
+ 
+  ----------------------------------------------------------------------------- 
+ 
+  Device:                                                                       
+    /sybase/syb-gpas-perf/hperfdat01/hperfdata_06.dat                           
+    hperfdata_06                  per sec      per xact       count  % of total
+  -------------------------  ------------  ------------  ----------  ---------- 
+  Total I/Os                          0.0           0.0           0       n/a   
+  -------------------------  ------------  ------------  ----------  ---------- 
+  Total I/Os                          0.0           0.0           0       0.0 %
+ 
+ 
+  ----------------------------------------------------------------------------- 
+ 
+  Device:                                                                       
+    /sybase/syb-gpas-perf/hperfdat01/hperfdata_07.dat                           
+    hperfdata_07                  per sec      per xact       count  % of total
+  -------------------------  ------------  ------------  ----------  ---------- 
+  Total I/Os                          0.0           0.0           0       n/a   
+  -------------------------  ------------  ------------  ----------  ---------- 
+  Total I/Os                          0.0           0.0           0       0.0 %
+ 
+ 
+  ----------------------------------------------------------------------------- 
+ 
+  Device:                                                                       
+    /sybase/syb-gpas-perf/hperfdat01/hperfdata_08.dat                           
+    hperfdata_08                  per sec      per xact       count  % of total
+  -------------------------  ------------  ------------  ----------  ---------- 
+  Total I/Os                          0.0           0.0           0       n/a   
+  -------------------------  ------------  ------------  ----------  ---------- 
+  Total I/Os                          0.0           0.0           0       0.0 %
+ 
+ 
+  ----------------------------------------------------------------------------- 
+ 
+  Device:                                                                       
+    /sybase/syb-gpas-perf/hperfdat01/hperfdata_09.dat                           
+    hperfdata_09                  per sec      per xact       count  % of total
+  -------------------------  ------------  ------------  ----------  ---------- 
+  Total I/Os                          0.0           0.0           0       n/a   
+  -------------------------  ------------  ------------  ----------  ---------- 
+  Total I/Os                          0.0           0.0           0       0.0 %
+ 
+ 
+  ----------------------------------------------------------------------------- 
+ 
+  Device:                                                                       
+    /sybase/syb-gpas-perf/hperfdat01/hperfdata_10.dat                           
+    hperfdata_10                  per sec      per xact       count  % of total
+  -------------------------  ------------  ------------  ----------  ---------- 
+  Total I/Os                          0.0           0.0           0       n/a   
+  -------------------------  ------------  ------------  ----------  ---------- 
+  Total I/Os                          0.0           0.0           0       0.0 %
+ 
+ 
+  ----------------------------------------------------------------------------- 
+ 
+  Device:                                                                       
+    /sybase/syb-gpas-perf/hperfdat01/hperfdata_11.dat                           
+    hperfdata_11                  per sec      per xact       count  % of total
+  -------------------------  ------------  ------------  ----------  ---------- 
+  Total I/Os                          0.0           0.0           0       n/a   
+  -------------------------  ------------  ------------  ----------  ---------- 
+  Total I/Os                          0.0           0.0           0       0.0 %
+ 
+ 
+  ----------------------------------------------------------------------------- 
+ 
+  Device:                                                                       
+    /sybase/syb-gpas-perf/hperfdat01/hperfdata_12.dat                           
+    hperfdata_12                  per sec      per xact       count  % of total
+  -------------------------  ------------  ------------  ----------  ---------- 
+  Total I/Os                          0.0           0.0           0       n/a   
+  -------------------------  ------------  ------------  ----------  ---------- 
+  Total I/Os                          0.0           0.0           0       0.0 %
+ 
+ 
+  ----------------------------------------------------------------------------- 
+ 
+  Device:                                                                       
+    /sybase/syb-gpas-perf/hperfdat01/hperfdata_13.dat                           
+    hperfdata_13                  per sec      per xact       count  % of total
+  -------------------------  ------------  ------------  ----------  ---------- 
+  Total I/Os                          0.0           0.0           0       n/a   
+  -------------------------  ------------  ------------  ----------  ---------- 
+  Total I/Os                          0.0           0.0           0       0.0 %
+ 
+ 
+  ----------------------------------------------------------------------------- 
+ 
+  Device:                                                                       
+    /sybase/syb-gpas-perf/hperfdat01/hperfdata_14.dat                           
+    hperfdata_14                  per sec      per xact       count  % of total
+  -------------------------  ------------  ------------  ----------  ---------- 
+  Total I/Os                          0.0           0.0           0       n/a   
+  -------------------------  ------------  ------------  ----------  ---------- 
+  Total I/Os                          0.0           0.0           0       0.0 %
+ 
+ 
+  ----------------------------------------------------------------------------- 
+ 
+  Device:                                                                       
+    /sybase/syb-gpas-perf/hperfdat01/hperfdata_15.dat                           
+    hperfdata_15                  per sec      per xact       count  % of total
+  -------------------------  ------------  ------------  ----------  ---------- 
+  Total I/Os                          0.0           0.0           0       n/a   
+  -------------------------  ------------  ------------  ----------  ---------- 
+  Total I/Os                          0.0           0.0           0       0.0 %
+ 
+ 
+  ----------------------------------------------------------------------------- 
+ 
+  Device:                                                                       
+    /sybase/syb-gpas-perf/hperfdat01/hperfdata_16.dat                           
+    hperfdata_16                  per sec      per xact       count  % of total
+  -------------------------  ------------  ------------  ----------  ---------- 
+  Total I/Os                          0.0           0.0           0       n/a   
+  -------------------------  ------------  ------------  ----------  ---------- 
+  Total I/Os                          0.0           0.0           0       0.0 %
+ 
+ 
+  ----------------------------------------------------------------------------- 
+ 
+  Device:                                                                       
+    /sybase/syb-gpas-perf/hperfdat01/hperfdata_17.dat                           
+    hperfdata_17                  per sec      per xact       count  % of total
+  -------------------------  ------------  ------------  ----------  ---------- 
+  Total I/Os                          0.0           0.0           0       n/a   
+  -------------------------  ------------  ------------  ----------  ---------- 
+  Total I/Os                          0.0           0.0           0       0.0 %
+ 
+ 
+  ----------------------------------------------------------------------------- 
+ 
+  Device:                                                                       
+    /sybase/syb-gpas-perf/hperfdat01/hperfdata_18.dat                           
+    hperfdata_18                  per sec      per xact       count  % of total
+  -------------------------  ------------  ------------  ----------  ---------- 
+  Total I/Os                          0.0           0.0           0       n/a   
+  -------------------------  ------------  ------------  ----------  ---------- 
+  Total I/Os                          0.0           0.0           0       0.0 %
+ 
+ 
+  ----------------------------------------------------------------------------- 
+ 
+  Device:                                                                       
+    /sybase/syb-gpas-perf/hperflog01/hperflog_01.dat                            
+    hperflog_01                   per sec      per xact       count  % of total
+  -------------------------  ------------  ------------  ----------  ---------- 
+  Total I/Os                          0.0           0.0           0       n/a   
+  -------------------------  ------------  ------------  ----------  ---------- 
+  Total I/Os                          0.0           0.0           0       0.0 %
+ 
+ 
+  ----------------------------------------------------------------------------- 
+ 
+  Device:                                                                       
+    /sybase/syb-gpas-perf/hperflog01/hperflog_02.dat                            
+    hperflog_02                   per sec      per xact       count  % of total
+  -------------------------  ------------  ------------  ----------  ---------- 
+  Total I/Os                          0.0           0.0           0       n/a   
+  -------------------------  ------------  ------------  ----------  ---------- 
+  Total I/Os                          0.0           0.0           0       0.0 %
+ 
+ 
+  ----------------------------------------------------------------------------- 
+ 
+  Device:                                                                       
+    /sybase/syb-gpas-perf/hperflog01/hperflog_03.dat                            
+    hperflog_03                   per sec      per xact       count  % of total
+  -------------------------  ------------  ------------  ----------  ---------- 
+  Total I/Os                          0.0           0.0           0       n/a   
+  -------------------------  ------------  ------------  ----------  ---------- 
+  Total I/Os                          0.0           0.0           0       0.0 %
+ 
+ 
+  ----------------------------------------------------------------------------- 
+ 
+  Device:                                                                       
+    /sybase/syb-gpas-perf/tempdbdat01/tempdbdata_01.dat                         
+    tempdbdata_01                 per sec      per xact       count  % of total
+  -------------------------  ------------  ------------  ----------  ---------- 
+    Reads                                                                       
+      APF                             0.0           0.0           0       0.0 %
+      Non-APF                         0.1           0.5           6     100.0 %
+    Writes                            0.0           0.0           0       0.0 %
+  -------------------------  ------------  ------------  ----------  ---------- 
+  Total I/Os                          0.1           0.5           6       2.5 %
+ 
+  Mirror Semaphore Granted            0.1           0.5           6     100.0 %
+  Mirror Semaphore Waited             0.0           0.0           0       0.0 %
+ 
+  ----------------------------------------------------------------------------- 
+ 
+  Device:                                                                       
+    /sybase/syb-gpas-perf/tempdbdat01/tempdbdata_02.dat                         
+    tempdbdata_02                 per sec      per xact       count  % of total
+  -------------------------  ------------  ------------  ----------  ---------- 
+  Total I/Os                          0.0           0.0           0       n/a   
+  -------------------------  ------------  ------------  ----------  ---------- 
+  Total I/Os                          0.0           0.0           0       0.0 %
+ 
+ 
+  ----------------------------------------------------------------------------- 
+ 
+  Device:                                                                       
+    /sybase/syb-gpas-perf/tempdbdat01/tempdbdata_03.dat                         
+    tempdbdata_03                 per sec      per xact       count  % of total
+  -------------------------  ------------  ------------  ----------  ---------- 
+  Total I/Os                          0.0           0.0           0       n/a   
+  -------------------------  ------------  ------------  ----------  ---------- 
+  Total I/Os                          0.0           0.0           0       0.0 %
+ 
+ 
+  ----------------------------------------------------------------------------- 
+ 
+  Device:                                                                       
+    /sybase/syb-gpas-perf/tempdbdat01/tempdbdbadatm01.dat                       
+    tempdbdbadatm01               per sec      per xact       count  % of total
+  -------------------------  ------------  ------------  ----------  ---------- 
+  Total I/Os                          0.0           0.0           0       n/a   
+  -------------------------  ------------  ------------  ----------  ---------- 
+  Total I/Os                          0.0           0.0           0       0.0 %
+ 
+ 
+  ----------------------------------------------------------------------------- 
+ 
+  Device:                                                                       
+    /sybase/syb-gpas-perf/tempdblog01/tempdbdbalogm01.dat                       
+    tempdbdbalogm01               per sec      per xact       count  % of total
+  -------------------------  ------------  ------------  ----------  ---------- 
+  Total I/Os                          0.0           0.0           0       n/a   
+  -------------------------  ------------  ------------  ----------  ---------- 
+  Total I/Os                          0.0           0.0           0       0.0 %
+ 
+ 
+  ----------------------------------------------------------------------------- 
+ 
+  Device:                                                                       
+    /sybase/syb-gpas-perf/tempdblog01/tempdblog_01.dat                          
+    tempdblog_01                  per sec      per xact       count  % of total
+  -------------------------  ------------  ------------  ----------  ---------- 
+  Total I/Os                          0.0           0.0           0       n/a   
+  -------------------------  ------------  ------------  ----------  ---------- 
+  Total I/Os                          0.0           0.0           0       0.0 %
+ 
+ 
+  ----------------------------------------------------------------------------- 
+ 
+  Device:                                                                       
+    /sybase/syb-gpas-perf/tempdblog01/tempdblog_02.dat                          
+    tempdblog_02                  per sec      per xact       count  % of total
+  -------------------------  ------------  ------------  ----------  ---------- 
+  Total I/Os                          0.0           0.0           0       n/a   
+  -------------------------  ------------  ------------  ----------  ---------- 
+  Total I/Os                          0.0           0.0           0       0.0 %
+ 
+ 
+  ----------------------------------------------------------------------------- 
+ 
+ 
+ 
+=============================================================================== 
+ 
+Network I/O Management
+----------------------
+ 
+  Total Network I/O Requests          0.0           0.0           0       n/a   
+ 
+ 
+  Total TDS Packets Received      per sec      per xact       count  % of total
+  -------------------------  ------------  ------------  ----------  ---------- 
+  Total TDS Packets Rec'd             0.0           0.0           0       n/a   
+ 
+ 
+  Total Bytes Received            per sec      per xact       count  % of total
+  -------------------------  ------------  ------------  ----------  ---------- 
+  Total Bytes Rec'd                   0.0           0.0           0       n/a   
+ 
+ 
+  ----------------------------------------------------------------------------- 
+ 
+  Total TDS Packets Sent          per sec      per xact       count  % of total
+  -------------------------  ------------  ------------  ----------  ---------- 
+  Total TDS Packets Sent              0.0           0.0           0       n/a   
+ 
+ 
+  Total Bytes Sent                per sec      per xact       count  % of total
+  -------------------------  ------------  ------------  ----------  ---------- 
+  Total Bytes Sent                    0.0           0.0           0       n/a   
+ 
+ 
+===============================================================================
+ 
+Replication Agent
+-----------------
+ 
+Replication Agent:  hperf
+Replication Server: REP_GPAS01_PROD
+ 
+                                  per sec      per xact       count  % of total
+                             ------------  ------------  ----------  ----------
+Log Scan Summary
+    Log Records Scanned               n/a           n/a           0       n/a
+    Log Records Processed             n/a           n/a           0       n/a
+    Number of Log Scans               n/a           n/a           0       n/a
+    Amount of Time for Log Scans (ms) n/a           n/a           0       n/a
+    Longest Time for Log Scan (ms)    n/a           n/a           0       n/a
+    Average Time per Log Scan (ms)    n/a           n/a         0.0       n/a
+ 
+Log Scan Activity
+    Updates                           n/a           n/a           0       n/a
+    Inserts                           n/a           n/a           0       n/a
+    Deletes                           n/a           n/a           0       n/a
+    Store Procedures                  n/a           n/a           0       n/a
+    DDL Log Records                   n/a           n/a           0       n/a
+    Writetext Log Records             n/a           n/a           0       n/a
+    Text/Image Log Records            n/a           n/a           0       n/a
+    CLRs                              n/a           n/a           0       n/a
+    Checkpoints Processed             n/a           n/a           0       n/a
+    SQL Statements Processed          n/a           n/a           0       n/a
+ 
+Transaction Activity
+    Opened                            n/a           n/a           0       n/a
+    Commited                          n/a           n/a           0       n/a
+    Aborted                           n/a           n/a           0       n/a
+    Prepared                          n/a           n/a           0       n/a
+    Delayed Commit                    n/a           n/a           0       n/a
+    Maintenance User                  n/a           n/a           0       n/a
+ 
+Log Extension Wait
+    Count                             n/a           n/a           0       n/a
+    Amount of time (ms)               n/a           n/a           0       n/a
+    Longest Wait (ms)                 n/a           n/a           0       n/a
+    Average Time (ms)                 n/a           n/a         0.0       n/a
+ 
+Schema Cache
+ Usage
+Msg 249, Level 16, State 1:
+Server 'GPAS_PERF', Procedure 'sp_sysmon_repagent', Line 401:
+Syntax error during explicit conversion of VARCHAR value 'n/a' to a INT field.
+(return status = -6)

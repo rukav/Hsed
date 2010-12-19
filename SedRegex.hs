@@ -4,19 +4,21 @@ import Data.Array((!))
 import Data.Bits((.|.))
 import Text.Regex.Base(RegexMaker(makeRegexOpts),defaultExecOpt,RegexLike(matchAll,matchAllText),RegexContext(matchM),MatchText)
 import Text.Regex.Posix
+--import Text.Regex.TDFA
 import Text.Regex.Base.RegexLike
 import Text.Regex
+import qualified Data.ByteString.Char8 as B
 import Debug.Trace
 
 data SedPattern = SedPattern Circumflex Pattern Dollar deriving Show
-type Pattern = String
+type Pattern = B.ByteString
 data RangeChars = RangeChars (Maybe Char) (Maybe Char)  
-                | String String                   
+                | String B.ByteString                   
     deriving Show
 
-data BracketExp = CollatingElem String 
-                | CollatingSym String 
-                | EquivClass String 
+data BracketExp = CollatingElem B.ByteString 
+                | CollatingSym B.ByteString
+                | EquivClass B.ByteString
                 | CharClass RangeChars
     deriving Show
 
@@ -27,29 +29,28 @@ type High = Maybe Int
 type Circumflex = Maybe Char                      
 type Dollar = Maybe Char                          
 
-sedSubRegex :: String                         -- ^ Search pattern
-            -> String                         -- ^ Input string
-            -> String                         -- ^ Replacement text
+sedSubRegex :: B.ByteString                         -- ^ Search pattern
+            -> B.ByteString                         -- ^ Input string
+            -> B.ByteString                         -- ^ Replacement text
             -> Int                            -- ^ Occurrence
-            -> (String, Bool)                 -- ^ (Output string, Replacement occurs)
+            -> (B.ByteString, Bool)                 -- ^ (Output string, Replacement occurs)
 --sedSubRegex _ "" _ _ = ("", True)
 sedSubRegex pat inp repl n =
-  let regexp = makeRegexOpts compExtended defaultExecOpt pat 
-      compile _i str [] = \ _m ->  (str++)
-      compile i str (("\\",(off,len)):rest) =
-        let i' = off+len
-            pre = take (off-i) str
-            str' = drop (i'-i) str
-        in if null str' then \ _m -> (pre ++) . ('\\':)
-             else \  m -> (pre ++) . ('\\' :) . compile i' str' rest m
+  let regexp = makeRegexOpts compExtended defaultExecOpt pat
+  --let regexp = mkRegex pat -- for TDFA
+      compile _i str [] = \ _m -> B.append str
       compile i str ((xstr,(off,len)):rest) =
         let i' = off+len
-            pre = take (off-i) str
-            str' = drop (i'-i) str
-            x = read xstr
-        in if null str' then \ m -> (pre++) . (fst (m!x) ++)
-             else \ m -> (pre++) . (fst (m!x) ++) . compile i' str' rest m
-      compiled :: MatchText String -> String -> String
+            pre = B.take (off-i) str
+            str' = B.drop (i'-i) str
+            slashEsc = B.pack "\\"
+            app m = if xstr == slashEsc then B.append slashEsc
+                     else let x = read (B.unpack xstr) :: Int in 
+                            B.append (fst (m!x))
+        in if B.null str' then \ m -> (B.append pre) . app m
+             else \ m -> (B.append pre) . app m . compile i' str' rest m
+
+      compiled :: MatchText B.ByteString -> B.ByteString -> B.ByteString
       compiled = compile 0 repl findrefs where
         -- bre matches a backslash then capture either a backslash or some digits
         bre = mkRegex "\\\\(\\\\|[0-9]+)"
@@ -58,23 +59,25 @@ sedSubRegex pat inp repl n =
       go i str (m:ms) =
         let (_,(off,len)) = m!0
             i' = off+len
-            pre = take (off-i) str
-            str' = drop (i'-i) str
-        in if null str' then pre ++ compiled m ""
-             else pre ++ compiled m (go i' str' ms)
-      occur _ "" _ _ _ = ("", False)
+            pre = B.take (off-i) str
+            str' = B.drop (i'-i) str
+        in if B.null str' then B.concat [pre, compiled m B.empty]
+             else B.concat [pre, compiled m (go i' str' ms)]
+   
       occur regexp inp repl n pre =
-        case matchOnceText regexp inp of
+        if inp == B.empty then (B.empty, False)
+         else
+          case matchOnceText regexp inp of
            Nothing -> (inp, False)
            Just (p, m, r) -> 
               if n > 1 then 
-                 let acc = pre ++ p ++ fst (m!0) in
+                 let acc = B.concat [pre, p, fst (m!0)] in
                      occur regexp r repl (n-1) acc
                else
-                  (pre ++ go 0 inp [m], True)
+                  (B.concat [pre, go 0 inp [m]], True)
   in if n == 0 then 
        let ms = matchAllText regexp inp in
          (go 0 inp ms, (not . null) ms)
-      else occur regexp inp repl n ""
+      else occur regexp inp repl n B.empty
 
 matchRE pat str = str =~ pat :: Bool

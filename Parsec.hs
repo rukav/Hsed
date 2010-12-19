@@ -4,6 +4,7 @@ import Control.Monad
 import Ast
 import SedRegex
 import Prelude hiding (readFile, writeFile)
+import qualified Data.ByteString.Char8 as B
 
 import Debug.Trace
 import Text.Printf
@@ -25,7 +26,7 @@ backslash = char '\\'
 
 emptyState :: ParserState
 emptyState = ParserState { 
-    lastRE = ""   
+    lastRE = B.pack ""   
 }
 
 parseSed :: SedParser a -> Stream -> Either ParseError a
@@ -41,8 +42,9 @@ invert = (spaces >> char '!' >> return True) <|> return False
 
 parseRE :: String -> SedParser Pattern
 parseRE pat = do
-    updateState (\(ParserState re)  -> ParserState pat)
-    return pat
+    let patB = B.pack pat
+    updateState (\(ParserState re)  -> ParserState patB)
+    return patB
 
 pattern open close val = do
     pat <- between open close val
@@ -117,16 +119,21 @@ textFun c f = do
     backslash <?> "backslash"
     eol <?> "end of line"
     parts <- lines
-    return $ f (init $ unlines parts)
+    return $ f (B.pack (init $ unlines parts))
     where
        lines = do {x <- line; try eoleof; return x}
        line = sepBy part (backslash >> eol)
        part = many (noneOf "\\\n")
 
-argFun :: Char -> (String -> SedFun) -> SedParser SedFun
-argFun c f = 
+fileFun :: Char -> (FilePath -> SedFun) -> SedParser SedFun
+fileFun c f = 
     char c >> spaces >> 
     manyTill anyChar (lookAhead eoleof) >>= \l -> return $ f l
+
+argFun :: Char -> (B.ByteString -> SedFun) -> SedParser SedFun
+argFun c f = 
+    char c >> spaces >> 
+    manyTill anyChar (lookAhead eoleof) >>= \l -> return $ f (B.pack l)
 
 gotoFun :: Char -> (Maybe Label -> SedFun) -> SedParser SedFun
 gotoFun c f = do
@@ -135,14 +142,14 @@ gotoFun c f = do
     many $ choice[char ' ', char '\t']
     label <- manyTill anyChar (lookAhead eoleof)
     if null label then return $ f Nothing
-      else return $ f (Just label)
+      else return $ f (Just $ B.pack label)
 
 transform = do
     char 'y'
     slash <?> "/"
     str1 <- manyTill anyChar slash
     str2 <- manyTill anyChar slash
-    return $ Transform str1 str2
+    return $ Transform (B.pack str1) (B.pack str2)
 
 unesc [] = []
 unesc [x] = [x]
@@ -157,7 +164,7 @@ substitute = do
     pat <- pattern (char delim) (char delim) val
     repl <- rhs delim
     fs <- flags 
-    return $ Substitute (unesc pat) (esc repl) fs
+    return $ Substitute (B.pack $ unesc (B.unpack pat)) (B.pack $ esc repl) fs
     where
       esc [] = []
       esc [x] | x == '&' = "\\0"
@@ -197,8 +204,8 @@ append        = textFun 'a' Append
 change        = textFun 'c' Change 
 insert        = textFun 'i' Insert
 
-readFile      = argFun 'r' ReadFile
-writeFile     = argFun 'w' WriteFile
+readFile      = fileFun 'r' ReadFile
+writeFile     = fileFun 'w' WriteFile
 label         = argFun ':' Label
 
 lineNum       = bareFun '=' LineNum
