@@ -1,5 +1,16 @@
 {-# LANGUAGE TemplateHaskell #-}
 
+-- |
+-- Module      :  SedState
+-- Copyright   :  (c) Vitaliy Rkavishnikov
+-- License     :  BSD-style (see the file LICENSE)
+-- 
+-- Maintainer  :  virukav@gmail.com
+-- Stability   :  experimental
+-- Portability :  non-portable
+--
+-- The state of the program 
+
 module SedState where
 
 import qualified Control.Monad.State as S
@@ -11,19 +22,19 @@ import System.FilePath
 import Ast
 
 data Env = Env {
-  ast_ :: [SedCmd],
-  defOutput_ :: !Bool,
-  lastLine_ :: !Int,
-  curLine_ :: !Int,
-  inRange_ :: !Bool,
-  patternSpace_ :: !B.ByteString,
-  holdSpace_ :: !B.ByteString,
-  appendSpace_ :: [B.ByteString],
-  memorySpace_ :: !B.ByteString,
-  useMemSpace_ :: !Bool,
-  exit_ :: !Bool,
-  fileout_ :: [(FilePath, Handle)],
-  subst_ :: !Bool
+  ast_ :: [SedCmd],                 -- ^ Parsed Sed commands
+  defOutput_ :: !Bool,              -- ^ Suppress the default output
+  lastLine_ :: !Int,                -- ^ The last line index
+  curLine_ :: !Int,                 -- ^ The current line index
+  inRange_ :: !Bool,                -- ^ Is pattern space matches the address range
+  patternSpace_ :: !B.ByteString,   -- ^ The buffer to keep the selected line(s)
+  holdSpace_ :: !B.ByteString,      -- ^ The buffer to keep the line(s) temporarily
+  appendSpace_ :: [B.ByteString],   -- ^ The buffer to keep the append lines
+  memorySpace_ :: !B.ByteString,    -- ^ Store the output in the memory
+  useMemSpace_ :: !Bool,            -- ^ If True the Sed output is stored in the memory buffer
+  exit_ :: !Bool,                   -- ^ Exit the stream editor
+  fileout_ :: [(FilePath, Handle)], -- ^ Write (w command) files handles 
+  subst_ :: !Bool                   -- ^ The result of the last substitution
 } deriving (Show)
 
 $( deriveAccessors ''Env )
@@ -46,8 +57,6 @@ initEnv = Env {
   fileout_ = [],
   subst_ = False
 }
---initEnv = Env [] True 0 0 False [] [] [] [] False False [] False
---initEnv = Env [] [] True 0 0 False [] [] [] [] False False [] False
 
 set :: A.T Env a -> a -> SedState ()
 set f x = S.modify (A.set f x)

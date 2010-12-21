@@ -1,39 +1,33 @@
+-- |
+-- Module      :  SedRegex
+
+-- Maintainer  :  virukav@gmail.com
+-- Stability   :  experimental
+-- Portability :  non-portable-- |
+
+-- The Sed regular expression implementation based on the regex-posix package.   
+
 module SedRegex where
 
-import Data.Array((!))
-import Data.Bits((.|.))
-import Text.Regex.Base(RegexMaker(makeRegexOpts),defaultExecOpt,RegexLike(matchAll,matchAllText),RegexContext(matchM),MatchText)
+import Data.Array ((!))
+import Data.Bits ((.|.))
+import Text.Regex.Base (RegexMaker(makeRegexOpts),defaultExecOpt,
+                        RegexLike(matchAll,matchAllText),RegexContext(matchM),MatchText)
 import Text.Regex.Posix
 --import Text.Regex.TDFA
 import Text.Regex.Base.RegexLike
 import Text.Regex
 import qualified Data.ByteString.Char8 as B
-import Debug.Trace
 
-data SedPattern = SedPattern Circumflex Pattern Dollar deriving Show
 type Pattern = B.ByteString
-data RangeChars = RangeChars (Maybe Char) (Maybe Char)  
-                | String B.ByteString                   
-    deriving Show
 
-data BracketExp = CollatingElem B.ByteString 
-                | CollatingSym B.ByteString
-                | EquivClass B.ByteString
-                | CharClass RangeChars
-    deriving Show
-
-type Negate = Bool
-type Index = Int
-type Low = Maybe Int
-type High = Maybe Int
-type Circumflex = Maybe Char                      
-type Dollar = Maybe Char                          
-
-sedSubRegex :: B.ByteString                         -- ^ Search pattern
-            -> B.ByteString                         -- ^ Input string
-            -> B.ByteString                         -- ^ Replacement text
-            -> Int                            -- ^ Occurrence
-            -> (B.ByteString, Bool)                 -- ^ (Output string, Replacement occurs)
+-- | Replaces every occurance of the given regexp with the replacement string. 
+--   Modification of the subRegex function from regex-posix package.
+sedSubRegex :: B.ByteString         -- ^ Search pattern
+            -> B.ByteString         -- ^ Input string
+            -> B.ByteString         -- ^ Replacement text
+            -> Int                  -- ^ Occurrence
+            -> (B.ByteString, Bool) -- ^ (Output string, Replacement occurs)
 --sedSubRegex _ "" _ _ = ("", True)
 sedSubRegex pat inp repl n =
   let regexp = makeRegexOpts compExtended defaultExecOpt pat
@@ -47,8 +41,8 @@ sedSubRegex pat inp repl n =
             app m = if xstr == slashEsc then B.append slashEsc
                      else let x = read (B.unpack xstr) :: Int in 
                             B.append (fst (m!x))
-        in if B.null str' then \ m -> (B.append pre) . app m
-             else \ m -> (B.append pre) . app m . compile i' str' rest m
+        in if B.null str' then \ m -> B.append pre . app m
+             else \ m -> B.append pre . app m . compile i' str' rest m
 
       compiled :: MatchText B.ByteString -> B.ByteString -> B.ByteString
       compiled = compile 0 repl findrefs where
@@ -80,4 +74,5 @@ sedSubRegex pat inp repl n =
          (go 0 inp ms, (not . null) ms)
       else occur regexp inp repl n B.empty
 
+-- | Match the regular expression against text
 matchRE pat str = str =~ pat :: Bool

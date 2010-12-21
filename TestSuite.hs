@@ -6,12 +6,12 @@ import System.FilePath (replaceExtension, takeExtension, (</>))
 import Control.Monad (forM_, when)
 import qualified Control.Exception as E
 import qualified Control.Monad.State as S
-import StreamEd
-import SedState
 import System.Console.CmdArgs
 import Data.List (isPrefixOf)
 import qualified Data.ByteString.Char8 as B
 import Parsec (parseSed, sedCmds)
+import StreamEd
+import SedState
 
 data Config = Config {
   dir :: FilePath,
@@ -58,7 +58,7 @@ parseFile script inpfile = do
 testParse :: IO ()
 testParse = do
    putStrLn "<-- Sed parser tests started"
-   forM_ (ptests) $ \(str, ok) -> 
+   forM_ ptests $ \(str, ok) -> 
       case (parseSed sedCmds str) of
         Left x -> putStrLn  (failed str ++ " -> ") >> print x
         Right y -> if show y == ok then putStrLn $ passed (show str)
@@ -82,7 +82,7 @@ testFile script inext okext = do
            ) initEnv
     okf <- readFile okfile `catch` openFileError okfile 
     let res = memorySpace_ env
-    if (B.unpack res) == okf then 
+    if B.unpack res == okf then 
       putStrLn $ passed script
      else do
       putStrLn $ failed script  
