@@ -1,8 +1,8 @@
 This is a version of sed based on POSIX "The Open Group Base Specifications Issue 7" 
 IEEE Std 1003.1-2008.  
 
-Usage: Sed [-n] script [file...],       Sed [-n] -e script [-e script]... [-f script_file]... [file...],       Sed [-n] [-e script]... -f script_file [-f script_file]... [file...]
+Usage: Hsed [-n] script [file...],
+       Hsed [-n] -e script [-e script]... [-f script_file]... [file...],
+       Hsed [-n] [-e script]... -f script_file [-f script_file]... [file...]
 
-
-See the file TODO for the missing features and the known the bugs.
 
