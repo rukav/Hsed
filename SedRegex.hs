@@ -10,12 +10,8 @@
 module SedRegex where
 
 import Data.Array ((!))
-import Data.Bits ((.|.))
-import Text.Regex.Base (RegexMaker(makeRegexOpts),defaultExecOpt,
-                        RegexLike(matchAll,matchAllText),RegexContext(matchM),MatchText)
 import Text.Regex.Posix
 --import Text.Regex.TDFA
-import Text.Regex.Base.RegexLike
 import Text.Regex
 import qualified Data.ByteString.Char8 as B
 

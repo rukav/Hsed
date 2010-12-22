@@ -1,6 +1,5 @@
 {-# LANGUAGE DeriveDataTypeable #-}
 
-import System.IO
 import System.Directory (getDirectoryContents)
 import System.FilePath (replaceExtension, takeExtension, (</>))
 import Control.Monad (forM_, when)
@@ -20,6 +19,7 @@ data Config = Config {
   file :: FilePath
 } deriving (Show, Data, Typeable)
 
+config :: Mode (CmdArgs Config)
 config = cmdArgsMode $ Config
    {dir = def &= typFile &= help "Directory with the test cases"
    ,inp = def &= help "Input file extension"
@@ -44,8 +44,13 @@ main = do
    else
     testDir (dir cnf) (inp cnf) (ok cnf) 
 
+passed :: String -> String
 passed script = result script " is passed"
+
+failed :: String -> String
 failed script = result script " is failed"
+
+result :: String -> String -> String
 result script str = "Test " ++ script ++ str
 
 parseFile :: FilePath -> String -> SedState ([FilePath],String)
@@ -58,19 +63,18 @@ parseFile script inpfile = do
 testParse :: IO ()
 testParse = do
    putStrLn "<-- Sed parser tests started"
-   forM_ ptests $ \(str, ok) -> 
+   forM_ ptests $ \(str, etalon) -> 
       case (parseSed sedCmds str) of
         Left x -> putStrLn  (failed str ++ " -> ") >> print x
-        Right y -> if show y == ok then putStrLn $ passed (show str)
+        Right y -> if show y == etalon then putStrLn $ passed (show str)
                     else do 
                      putStrLn $ failed str
-                     print ok
+                     print etalon
                      print "====>"
                      print y
 
    putStrLn "--> Sed parser tests ended\n"
    
-
 testFile :: FilePath -> String -> String -> IO ()
 testFile script inext okext = do
     let inpfile = replaceExtension script inext
@@ -80,26 +84,30 @@ testFile script inext okext = do
                 compile cmds
                 execute files
            ) initEnv
-    okf <- readFile okfile `catch` openFileError okfile 
+    okf <- B.readFile okfile `catch` openFileErrorB okfile 
     let res = memorySpace_ env
-    if B.unpack res == okf then 
+    if res == okf then 
       putStrLn $ passed script
      else do
       putStrLn $ failed script  
-      mapM_ print (lines okf)
+      mapM_ print (B.lines okf)
       print "===>"
-      mapM_ print (lines (B.unpack $ memorySpace_ env))
+      mapM_ print (B.lines (memorySpace_ env))
+    where
+      openFileErrorB f e = putStr ("Error: Couldn't open " ++ f ++ 
+           ": " ++ show (e :: E.IOException)) >> return B.empty
 
 testDir :: FilePath -> String -> String -> IO ()
-testDir dir inpext okext = do
+testDir path inpext okext = do
     putStrLn "<-- Sed script tests started"
-    names <- getDirectoryContents dir
-    forM_ names $ \name -> do
-       let path = dir </> name
-       when (takeExtension path == ".sed") $
-           testFile path inpext okext
+    names <- getDirectoryContents path
+    forM_ names $ \n -> do
+       let filePath = path </> n
+       when (takeExtension filePath == ".sed") $
+           testFile filePath inpext okext
     putStrLn "--> Sed script tests ended"
 
+ptests :: [(String, String)]
 ptests = [
  ("/123/=",
   "[SedCmd (Address (Just (Pat \"123\")) Nothing False) LineNum]"),

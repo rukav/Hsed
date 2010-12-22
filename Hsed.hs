@@ -14,8 +14,6 @@
 module Main where
 
 import System (getArgs)
-import System.IO (putStrLn)
-import qualified Control.Monad.State as S
 import StreamEd (run)
 
 main :: IO ()
@@ -26,6 +24,7 @@ main = do
       return ()
      else run args
 
+usage :: String
 usage = unlines help 
   where help = ["usage: Hsed [-n] script [file...]",
                 "       Hsed [-n] -e script [-e script]... [-f script_file]... [file...]",

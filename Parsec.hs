@@ -15,7 +15,6 @@ module Parsec where
 
 import Prelude hiding (readFile, writeFile)
 import Text.ParserCombinators.Parsec hiding (label)
-import Text.Printf
 import qualified Data.ByteString.Char8 as B
 import Ast
 import SedRegex
@@ -47,7 +46,7 @@ parseSed p = runParser p emptyState ""
 parseRE :: String -> SedParser Pattern
 parseRE pat = do
     let patB = B.pack pat
-    updateState (\(ParserState re)  -> ParserState patB)
+    updateState (\(ParserState _)  -> ParserState patB)
     return patB
 
 pattern open close val = do

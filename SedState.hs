@@ -18,7 +18,6 @@ import qualified Data.Accessor.Basic as A
 import qualified Data.ByteString.Char8 as B
 import Data.Accessor.Template (deriveAccessors)
 import System.IO
-import System.FilePath
 import Ast
 
 data Env = Env {

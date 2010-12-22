@@ -5,11 +5,12 @@ import qualified StreamEd as E
 import Prelude hiding (words)
 import SedState
 
+wordsArgs :: [String]
 wordsArgs = ["-n","-e","/^repay/p","tests/words.txt"]
 
 sedBench :: [String] -> IO ()
 sedBench args = do
-  S.execStateT ( 
+  _ <- S.execStateT ( 
     do 
       (files, cmds) <- E.parseArgs args
       set useMemSpace True
@@ -18,20 +19,21 @@ sedBench args = do
     ) initEnv
   return ()
 
+main :: IO ()
 main = do
   putStrLn "Native sed timing"
-  system "time sed -n -e '/^ala/p' tests/words.txt > /dev/null"
+  _ <- system "time sed -n -e '/^ala/p' tests/words.txt > /dev/null"
 
   putStrLn "Hsed timing"
-  system "time ./Hsed -n -e '/^ala/p' tests/words.txt > /dev/null"
+  _ <- system "time ./Hsed -n -e '/^ala/p' tests/words.txt > /dev/null"
 
   putStrLn "Hsed GHC report"
-  system "./Hsed -n -e '/^ala/p' tests/words.txt > /dev/null +RTS -s"
+  _ <- system "./Hsed -n -e '/^ala/p' tests/words.txt > /dev/null +RTS -s"
 
   putStrLn "Hsed GHC build and profiling report"
-  --system "ghc -O2 --make Hsed.hs"
-  --system "ghc -O2 --make Hsed.hs -prof -auto-all -caf-all -fforce-recomp -osuf p_o -hisuf p_hi"
-  system "./Hsed -n -e '/^ala/p' tests/words.txt > /dev/null +RTS -p"
+  system "ghc -O2 --make Hsed.hs"
+  system "ghc -O2 --make Hsed.hs -prof -auto-all -caf-all -fforce-recomp -osuf p_o -hisuf p_hi"
+  _ <- system "./Hsed -n -e '/^ala/p' tests/words.txt > /dev/null +RTS -p"
 
   putStrLn "\nHsed Criterition report"
   defaultMain [bench "words" $ whnfIO (sedBench wordsArgs)]

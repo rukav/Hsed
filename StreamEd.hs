@@ -21,7 +21,6 @@ import qualified Control.Monad.State as S
 import qualified Control.Exception as E
 import qualified System.FilePath.Glob as G (compile, globDir1) 
 import Data.List (isPrefixOf)
-import Data.Typeable
 import Data.Char (isPrint)
 import Data.Maybe (fromMaybe)
 import qualified Data.ByteString.Char8 as B
@@ -39,13 +38,12 @@ data CmdSchedule = None | NextCmd | Break | Continue | Jump (Maybe B.ByteString)
 
 -- | Run Sed program
 run :: [String] -> IO ()
-run args = do 
+run args = 
     S.execStateT (do 
            (files, cmds) <- parseArgs args
            compile cmds
            execute files
-         ) initEnv
-    return ()
+         ) initEnv >> return ()
 
 -- | Parse Sed program's arguments
 parseArgs :: [String] -> SedState ([FilePath], String)
@@ -54,17 +52,18 @@ parseArgs xs = parseArgs' xs ([],[]) where
     parseArgs' [x] fs 
        | x == "-n" = set defOutput False >> return fs
        | otherwise = parseCmds x fs
-    parseArgs' (x:y:xs) fs
-       | x == "-e" = parseArgs' xs (addCmd fs y)
+    parseArgs' (x:y:ys) fs
+       | x == "-e" = parseArgs' ys (addCmd fs y)
        | x == "-f" = do
             sed <- S.lift $ System.IO.readFile y `catch` openFileError y
             when ("#n" `isPrefixOf` sed) $ set defOutput False 
-            parseArgs' xs (addCmd fs sed)
-       | x == "-n" = set defOutput False >> parseArgs' (y:xs) fs
-       | otherwise = parseCmds x fs >>= \fs' -> parseArgs' (y:xs) fs'
+            parseArgs' ys (addCmd fs sed)
+       | x == "-n" = set defOutput False >> parseArgs' (y:ys) fs
+       | otherwise = parseCmds x fs >>= \fs' -> parseArgs' (y:ys) fs'
        where
-         addCmd (files, cmds) x = (files, cmds ++ ('\n':x))
+         addCmd (files, cmds) x' = (files, cmds ++ ('\n':x'))
 
+openFileError :: String -> E.IOException -> IO [a]
 openFileError f e = putStr ("Error: Couldn't open " ++ f ++ ": " ++ 
                     show (e :: E.IOException)) >> return []
 
@@ -72,14 +71,11 @@ openFileError f e = putStr ("Error: Couldn't open " ++ f ++ ": " ++
 parseCmds :: String -> ([FilePath], String) -> SedState ([FilePath], String)
 parseCmds x (files, cmds) = 
     if null cmds then return (files, x) 
-     else addFiles x (files,cmds)
-    where
-     addFiles :: String -> ([FilePath], String) -> SedState ([FilePath], String)
-     addFiles x (files, cmds) = do
-     let (dir, fp) = splitFileName x
-     fs <- S.lift $ G.globDir1 (G.compile fp) dir
-     if null fs then error $ fp ++ ": No such file or directory"
-      else return (files ++ fs, cmds)
+     else do 
+       let (dir, fp) = splitFileName x
+       fs <- S.lift $ G.globDir1 (G.compile fp) dir
+       if null fs then error $ fp ++ ": No such file or directory"
+        else return (files ++ fs, cmds)
 
 -- | Parse the Sed commands
 compile :: String -> SedState ()
@@ -139,14 +135,14 @@ line h b = do
    p <- S.lift $ hIsEOF h
    if p then return (EOF,B.empty)
      else do 
-       line <- S.lift $ B.hGetLine h
+       str <- S.lift $ B.hGetLine h
        modify curLine (+1)
        isLast <- if h == stdin then return False 
-                   else S.lift (hIsEOF h) >>= \b -> return b
+                   else S.lift (hIsEOF h) >>= \eof -> return eof
 
        if isLast && b then                
-           get curLine >>= \l -> set lastLine l >> return (Cont, line)
-        else return (Cont, line)
+           get curLine >>= \l -> set lastLine l >> return (Cont, str)
+        else return (Cont, str)
 
 -- | Manage the flow control of the Sed commands
 eval :: Handle -> Bool -> [SedCmd] -> SedState CmdSchedule
@@ -158,11 +154,12 @@ eval h b cs = do
                mapM_ prnStr a >> set exit True >> return Exit
        _ -> get appendSpace >>= \a -> mapM_ prnStr a >> return sch
 
--- | Transfer control to the command marked with the label      
+-- | Transfer control to the command marked with the label
+goto :: [SedCmd] -> Maybe Label -> [SedCmd]      
 goto cmds = maybe [] (go cmds)
   where 
-        go [] str = []
-        go (SedCmd a fun:cs) str = case fun of
+        go [] _ = []
+        go (SedCmd _ fun:cs) str = case fun of
            Group cs' -> go cs' str
            Label x -> if x == str then cs
                        else go cs str
@@ -171,24 +168,25 @@ goto cmds = maybe [] (go cmds)
 -- | Execute the specified Sed commands
 execCmds :: [SedCmd] -> SedState (FileStatus,B.ByteString) -> SedState CmdSchedule
 execCmds [] _ = printPatSpace >> return None
-execCmds (x:xs) line = do
-    sch <- execCmd x line
-    if sch `elem` [NextCmd, None] then execCmds xs line
+execCmds (x:xs) line' = do
+    sch <- execCmd x line'
+    if sch `elem` [NextCmd, None] then execCmds xs line'
      else if sch == Continue then do
        cs <- get ast
-       execCmds cs line
+       execCmds cs line'
      else return sch
 
 -- | Execute the Sed command if the address interval of the command is matched
-execCmd (SedCmd a fun) line = do
+execCmd :: SedCmd -> SedState (FileStatus, B.ByteString) -> SedState CmdSchedule
+execCmd (SedCmd a fun) line' = do
      b <- matchAddress a
-     if b then runCmd fun line >>= \sch -> return sch
+     if b then runCmd fun line' >>= \sch -> return sch
       else return NextCmd
 
 -- | Check if the address interval is matched  
 matchAddress :: Address -> SedState Bool
-matchAddress (Address a1 a2 invert) = 
-    case (a1,a2) of
+matchAddress (Address addr1 addr2 invert) = 
+    case (addr1,addr2) of
       (Just x, Nothing) -> matchAddr x x >>= \b -> return $ b /= invert
       (Just x, Just y)  -> matchAddr x y >>= \b -> return $ b /= invert
       _                 -> return $ not invert
@@ -219,9 +217,9 @@ matchAddress (Address a1 a2 invert) =
 
 -- | Execute the Sed function
 runCmd :: SedFun -> SedState (FileStatus,B.ByteString) -> SedState CmdSchedule
-runCmd cmd line = 
+runCmd cmd line' = 
     case cmd of
-      Group cs -> group cs line
+      Group cs -> group cs line'
       LineNum -> get curLine >>= (prnStrLn . B.pack . show) >> return NextCmd
       Append txt -> modify appendSpace (++ [txt]) >> return NextCmd
       Branch lbl -> return (Jump lbl)
@@ -236,8 +234,8 @@ runCmd cmd line =
                     >> return NextCmd
       Insert txt -> prnStrLn txt >> return NextCmd
       List -> list
-      Next -> next line
-      AppendLinePat -> appendLinePat line
+      Next -> next line'
+      AppendLinePat -> appendLinePat line'
       PrintPat -> get patternSpace >>= \p -> prnStrLn p >> return NextCmd
       WriteUpPat -> get patternSpace >>= (prnStrLn . B.takeWhile (/='\n')) >> return NextCmd
       Quit -> return Exit
@@ -247,25 +245,28 @@ runCmd cmd line =
       WriteFile file -> writeF file
       Exchange -> exchange
       Transform t1 t2 -> transform t1 t2
-      Label str -> return NextCmd
+      Label _ -> return NextCmd
       Comment -> return NextCmd
       EmptyCmd -> return None
 
--- | Execute 'group' Sed function    
+-- | Execute 'group' Sed function 
+group :: [SedCmd] -> SedState (FileStatus, B.ByteString) -> SedState CmdSchedule  
 group [] _ = return NextCmd
-group (cmd:xs) line = do
-    sch <- execCmd cmd line
+group (cmd:xs) line' = do
+    sch <- execCmd cmd line'
     if sch `elem` [NextCmd, None] then
-       group xs line
+       group xs line'
      else return sch
 
 -- | Execute 'delete' from multiline pattern space Sed function
+deletePat :: SedState CmdSchedule
 deletePat = do
     p <- get patternSpace
     set patternSpace (B.drop 1 $ B.dropWhile (/='\n') p)
     return Continue
 
 -- | Execute 'substitute' Sed function
+substitute :: B.ByteString -> B.ByteString -> Flags -> SedState CmdSchedule
 substitute pat repl fs = do
   let (gn, p, w) = getFlags fs 
   patSpace <- get patternSpace
@@ -273,8 +274,8 @@ substitute pat repl fs = do
   set subst b
   if b then do
      set patternSpace repl'
-     if p then get patternSpace >>= \p -> prnStrLn p >> return NextCmd 
-       else return NextCmd
+     _ <- if p then get patternSpace >>= \ps -> prnStrLn ps >> return NextCmd 
+           else return NextCmd
      if (not.null) w then writeF w >> return NextCmd else return NextCmd
    else return NextCmd
    where
@@ -291,6 +292,7 @@ substitute pat repl fs = do
         file = fromMaybe "" f
 
 -- | Execute 'change' Sed function
+change :: B.ByteString -> SedState CmdSchedule
 change txt = do
     range <- get inRange
     if not range then do
@@ -299,13 +301,15 @@ change txt = do
      else return Break
 
 -- | Execute 'next' Sed function
-next line = do
+next :: SedState (FileStatus, B.ByteString) -> SedState CmdSchedule
+next line' = do
     printPatSpace
-    (res,str) <- line
+    (res,str) <- line'
     set patternSpace str
     if res == EOF then return Break else return NextCmd
 
 -- | Execute 'list' Sed function
+list :: SedState CmdSchedule
 list = do
     patSpace <- get patternSpace
     S.forM_ (B.unpack patSpace) $ \ch ->
@@ -321,6 +325,7 @@ list = do
                     ["\\\\","\\a", "\\b", "\\f", "\\r", "\\t", "\\v"]
 
 -- | Execute 'exchange' Sed function
+exchange :: SedState CmdSchedule
 exchange = do
     hold <- get holdSpace
     pat  <- get patternSpace
@@ -329,8 +334,9 @@ exchange = do
     return NextCmd
 
 -- | Execute 'appendLinePat' Sed function
-appendLinePat line = do
-    (res,ln) <- line
+appendLinePat :: SedState (FileStatus, B.ByteString) -> SedState CmdSchedule
+appendLinePat line' = do
+    (res,ln) <- line'
     if res == EOF then return Break
       else do
        let suffix = B.append (B.pack "\n") ln
@@ -338,6 +344,7 @@ appendLinePat line = do
        return None
 
 -- | Execute 'transform' Sed function
+transform :: B.ByteString -> B.ByteString -> SedState CmdSchedule
 transform t1 t2 = do
     when (B.length t1 /= B.length t2) $ 
       error "Transform strings are not the same length"
@@ -348,6 +355,7 @@ transform t1 t2 = do
     where go ch = fromMaybe ch (lookup ch (B.zip t1 t2))
 
 -- | Write contents of the pattern space to the file
+writeF :: FilePath -> SedState CmdSchedule
 writeF file = do
     fout <- get fileout
     patSpace <- get patternSpace
@@ -361,6 +369,7 @@ writeF file = do
     return NextCmd
 
 -- | Add contents of the input file to the append space
+readF :: FilePath -> SedState CmdSchedule
 readF file = do
     cont <- S.lift $ B.readFile file `catch` \_ -> return B.empty
     modify appendSpace (++ [cont])
@@ -373,10 +382,11 @@ printPatSpace = do
    when out $ get patternSpace >>= \p -> prnStrLn p
 
 -- | Check if the current line in the pattern space is the last line
+isLastLine :: SedState Bool
 isLastLine = do
-    last <- get lastLine
+    l <- get lastLine
     cur <- get curLine
-    return $ last == cur
+    return $ l == cur
 
 -- | Writes the string to the standard output or save the string in the memory buffer
 prnStr :: B.ByteString -> SedState ()
