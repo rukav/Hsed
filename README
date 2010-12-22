@@ -5,4 +5,8 @@ Usage: Hsed [-n] script [file...],
        Hsed [-n] -e script [-e script]... [-f script_file]... [file...],
        Hsed [-n] [-e script]... -f script_file [-f script_file]... [file...]
 
+To run tests suite build and run TestSuite.hs:
+$ ghc --make TestSuite.hs
+$ ./TestSuite --dir tests --inp in --ok ok
+
 
