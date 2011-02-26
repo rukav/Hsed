@@ -9,3 +9,7 @@
 - Empty lhs proper error handling in the sed parser (s///). First RE should not be empty
 - s1\1121 is broken tests2/rhs-escapes.sed
 - pat = a*, str = "an", repl "x"  => result "xxnx" instead "xnx" ?
+- use Hsed as library and program
+- use regex-tdfa instead regex-posix to improve the performance
+- test lazy bytestring
+- Fix DeletePat when pattern space is empty (see spec)

@@ -11,6 +11,7 @@ import qualified Data.ByteString.Char8 as B
 import Parsec (parseSed, sedCmds)
 import StreamEd
 import SedState
+import Sed (execScript')
 
 data Config = Config {
   dir :: FilePath,
@@ -53,18 +54,11 @@ failed script = result script " is failed"
 result :: String -> String -> String
 result script str = "Test " ++ script ++ str
 
-parseFile :: FilePath -> String -> SedState ([FilePath],String)
-parseFile script inpfile = do
-    sed <- S.lift $ readFile script `catch` openFileError script
-    when ("#n" `isPrefixOf` sed) $ set defOutput False
-    set useMemSpace True
-    return ([inpfile], sed)
-
 testParse :: IO ()
 testParse = do
    putStrLn "<-- Sed parser tests started"
    forM_ ptests $ \(str, etalon) -> 
-      case (parseSed sedCmds str) of
+      case parseSed sedCmds str of
         Left x -> putStrLn  (failed str ++ " -> ") >> print x
         Right y -> if show y == etalon then putStrLn $ passed (show str)
                     else do 
@@ -79,20 +73,16 @@ testFile :: FilePath -> String -> String -> IO ()
 testFile script inext okext = do
     let inpfile = replaceExtension script inext
     let okfile = replaceExtension script okext    
-    env <- S.execStateT (do
-                (files, cmds) <- parseFile script inpfile
-                compile cmds
-                execute files
-           ) initEnv
+    sed <- readFile script `catch` openFileError script
+    res <- execScript' [inpfile] sed
     okf <- B.readFile okfile `catch` openFileErrorB okfile 
-    let res = memorySpace_ env
     if res == okf then 
       putStrLn $ passed script
      else do
       putStrLn $ failed script  
       mapM_ print (B.lines okf)
       print "===>"
-      mapM_ print (B.lines (memorySpace_ env))
+      mapM_ print (B.lines res)
     where
       openFileErrorB f e = putStr ("Error: Couldn't open " ++ f ++ 
            ": " ++ show (e :: E.IOException)) >> return B.empty
@@ -144,7 +134,7 @@ ptests = [
  ("r ReadFile.cmd\nr ReadFile.cmd",
   "[SedCmd (Address Nothing Nothing False) (ReadFile \"ReadFile.cmd\"),SedCmd (Address Nothing Nothing False) (ReadFile \"ReadFile.cmd\")]"),
  ("/^\\.H1/n\n/^$/d",
-  "[SedCmd (Address (Just (Pat \"^\\\\.H1\")) Nothing False) Next,SedCmd (Address (Just (Pat \"^$\")) Nothing False) Delete]"),
+  "[SedCmd (Address (Just (Pat \"^\\\\.H1\")) Nothing False) NextLine,SedCmd (Address (Just (Pat \"^$\")) Nothing False) DeleteLine]"),
  ("s/      /\\n/2",
   "[SedCmd (Address Nothing Nothing False) (Substitute \"      \" \"\\n\" (Flags (Just (OccurrencePrint (Just (Replace 2)) False)) Nothing))]"),
  ("s/Owner and Operator\\nGuide/aaa/g",
@@ -178,7 +168,7 @@ ptests = [
  ("N\nP",
   "[SedCmd (Address Nothing Nothing False) AppendLinePat,SedCmd (Address Nothing Nothing False) WriteUpPat]"),
  ("1!H;1!{ x; p; x \n};d",
-  "[SedCmd (Address (Just (LineNumber 1)) Nothing True) AppendHold,SedCmd (Address (Just (LineNumber 1)) Nothing True) (Group [SedCmd (Address Nothing Nothing False) EmptyCmd,SedCmd (Address Nothing Nothing False) Exchange,SedCmd (Address Nothing Nothing False) PrintPat,SedCmd (Address Nothing Nothing False) Exchange]),SedCmd (Address Nothing Nothing False) Delete]"),
+  "[SedCmd (Address (Just (LineNumber 1)) Nothing True) AppendHold,SedCmd (Address (Just (LineNumber 1)) Nothing True) (Group [SedCmd (Address Nothing Nothing False) EmptyCmd,SedCmd (Address Nothing Nothing False) Exchange,SedCmd (Address Nothing Nothing False) PrintPat,SedCmd (Address Nothing Nothing False) Exchange]),SedCmd (Address Nothing Nothing False) DeleteLine]"),
  ("/^0$/{\nc\\\nyes\n}",
   "[SedCmd (Address (Just (Pat \"^0$\")) Nothing False) (Group [SedCmd (Address Nothing Nothing False) EmptyCmd,SedCmd (Address Nothing Nothing False) (Change \"yes\")])]"),
  ("2,5 {\ns/[\t ]//g\n}",

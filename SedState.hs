@@ -33,7 +33,8 @@ data Env = Env {
   useMemSpace_ :: !Bool,            -- ^ If True the Sed output is stored in the memory buffer
   exit_ :: !Bool,                   -- ^ Exit the stream editor
   fileout_ :: [(FilePath, Handle)], -- ^ Write (w command) files handles 
-  subst_ :: !Bool                   -- ^ The result of the last substitution
+  subst_ :: !Bool,                  -- ^ The result of the last substitution
+  curFile_ :: (Handle, Bool)        -- ^ Current input file handle  
 } deriving (Show)
 
 $( deriveAccessors ''Env )
@@ -54,7 +55,8 @@ initEnv = Env {
   useMemSpace_ = False,
   exit_  = False,
   fileout_ = [],
-  subst_ = False
+  subst_ = False,
+  curFile_ = (stdin, True)
 }
 
 set :: A.T Env a -> a -> SedState ()

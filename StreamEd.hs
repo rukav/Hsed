@@ -30,10 +30,15 @@ import Ast
 import SedRegex
 import SedState
 
-data FileStatus = EOF | Cont 
+data Status = EOF | Cont 
    deriving (Eq, Show)
 
-data CmdSchedule = None | NextCmd | Break | Continue | Jump (Maybe B.ByteString) | Exit
+data FlowControl = 
+    Next                      -- ^ Apply the next sed command from the script to the pattern space
+  | Break                     -- ^ Read the new line to the pattern space and apply sed script  
+  | Continue                  -- ^ Reapply the sed script to the current pattern space
+  | Goto (Maybe B.ByteString) -- ^ Jump to the marked sed command and apply it to the pattern space   
+  | Exit                      -- ^ Quit 
    deriving (Eq, Show)
 
 -- | Run Sed program
@@ -87,51 +92,52 @@ compile cmds = do
 
 -- | Execute the parsed Sed commands against input data
 execute :: [FilePath] -> SedState ()
-execute cont = 
-   if null cont then processStdin
-    else do 
-     let (files,len) = (cont, length cont)
-     let fs = zipWith (\x y -> (x, y == len)) files [1..len]
-     processFiles fs
-     fout <- get fileout
-     S.lift $ S.mapM_ hClose (map snd fout)
-     return ()
+execute fs = do
+   if null fs then processStdin
+     else processFiles fs
+   fout <- get fileout
+   S.lift $ S.mapM_ hClose (map snd fout)
 
 -- | The standard input will be used if no file operands are specified
 processStdin :: SedState ()
 processStdin = do
     e <- get exit
     unless e $ do
+      set curFile (stdin, True)
       a <- get ast
-      loop stdin True a
+      loop a
 
 -- | Process the input text files
-processFiles :: [(FilePath, Bool)] -> SedState ()
-processFiles fs = 
+processFiles :: [FilePath] -> SedState ()
+processFiles files = do
+    let len = length files
+    let fs = zipWith (\x y -> (x, y == len)) files [1..len]
     S.forM_ fs $ \(file, lastFile) -> do
         e <- get exit
         unless e $ do
            h <- S.lift $ openFile file ReadMode
+           set curFile (h, lastFile)
            a <- get ast
-           loop h lastFile a
+           loop a
 
 -- | Cyclically append a line of input without newline into the pattern space
-loop :: Handle -> Bool -> [SedCmd] -> SedState ()
-loop h b cs = do
-      (res, str) <- line h b   
+loop :: [SedCmd] -> SedState ()
+loop cs = do
+      (res, str) <- line 
       case res of
-        EOF -> S.lift $ hClose h >> return ()
+        EOF -> get curFile >>= \(h,_) -> S.lift $ hClose h >> return ()
         _   -> do
           set patternSpace str
           set appendSpace []
-          sch <- eval h b cs
+          sch <- eval cs
           case sch of 
             Exit -> return ()
-            _    -> loop h b cs
+            _    -> loop cs
 
--- | Read an input line and handle the EOF status
-line :: Handle -> Bool -> SedState (FileStatus, B.ByteString)
-line h b = do
+-- | Read an input line
+line :: SedState (Status, B.ByteString)
+line = do
+   (h,b) <- get curFile
    p <- S.lift $ hIsEOF h
    if p then return (EOF,B.empty)
      else do 
@@ -145,11 +151,11 @@ line h b = do
         else return (Cont, str)
 
 -- | Manage the flow control of the Sed commands
-eval :: Handle -> Bool -> [SedCmd] -> SedState CmdSchedule
-eval h b cs = do
-    sch <- execCmds cs (line h b)
+eval :: [SedCmd] -> SedState FlowControl
+eval cs = do
+    sch <- execCmds cs
     case sch of
-       Jump lbl -> get ast >>= \as -> eval h b (goto as lbl)
+       Goto lbl -> get ast >>= \as -> eval (goto as lbl)
        Exit -> printPatSpace >> get appendSpace >>= \a -> 
                mapM_ prnStr a >> set exit True >> return Exit
        _ -> get appendSpace >>= \a -> mapM_ prnStr a >> return sch
@@ -165,23 +171,24 @@ goto cmds = maybe [] (go cmds)
                        else go cs str
            _ -> go cs str   
 
--- | Execute the specified Sed commands
-execCmds :: [SedCmd] -> SedState (FileStatus,B.ByteString) -> SedState CmdSchedule
-execCmds [] _ = printPatSpace >> return None
-execCmds (x:xs) line' = do
-    sch <- execCmd x line'
-    if sch `elem` [NextCmd, None] then execCmds xs line'
+-- | Execute Sed commands
+execCmds :: [SedCmd] -> SedState FlowControl
+execCmds [] = printPatSpace >> return Next
+execCmds (x:xs) = do
+    sch <- execCmd x
+    if sch `elem` [Next] then execCmds xs
      else if sch == Continue then do
        cs <- get ast
-       execCmds cs line'
+       execCmds cs
      else return sch
 
--- | Execute the Sed command if the address interval of the command is matched
-execCmd :: SedCmd -> SedState (FileStatus, B.ByteString) -> SedState CmdSchedule
-execCmd (SedCmd a fun) line' = do
+-- | Execute the Sed function if the address is matched
+execCmd :: SedCmd -> SedState FlowControl
+execCmd (SedCmd a fun) = do
      b <- matchAddress a
-     if b then runCmd fun line' >>= \sch -> return sch
-      else return NextCmd
+     if b then runCmd fun
+      else return Next
+
 
 -- | Check if the address interval is matched  
 matchAddress :: Address -> SedState Bool
@@ -216,68 +223,139 @@ matchAddress (Address addr1 addr2 invert) =
                 else return True
 
 -- | Execute the Sed function
-runCmd :: SedFun -> SedState (FileStatus,B.ByteString) -> SedState CmdSchedule
-runCmd cmd line' = 
+runCmd :: SedFun -> SedState FlowControl
+runCmd cmd = 
     case cmd of
-      Group cs -> group cs line'
-      LineNum -> get curLine >>= (prnStrLn . B.pack . show) >> return NextCmd
-      Append txt -> modify appendSpace (++ [txt]) >> return NextCmd
-      Branch lbl -> return (Jump lbl)
+      Group cs -> group cs
+      LineNum -> lineNum
+      Append txt -> append txt
+      Branch lbl -> branch lbl
       Change txt -> change txt
-      Delete -> set patternSpace B.empty >> return Break
+      DeleteLine -> deleteLine
       DeletePat -> deletePat
-      ReplacePat -> get holdSpace >>= \h -> set patternSpace h >> return NextCmd
-      AppendPat -> get holdSpace >>= \h -> modify patternSpace (`B.append` B.cons '\n' h) 
-                   >> return NextCmd
-      ReplaceHold -> get patternSpace >>= \p -> set holdSpace p >> return NextCmd
-      AppendHold -> get patternSpace >>= \p -> modify holdSpace (`B.append` B.cons '\n' p) 
-                    >> return NextCmd
-      Insert txt -> prnStrLn txt >> return NextCmd
+      ReplacePat -> replacePat
+      AppendPat -> appendPat
+      ReplaceHold -> replaceHold
+      AppendHold -> appendHold
+      Insert txt -> insert txt
       List -> list
-      Next -> next line'
-      AppendLinePat -> appendLinePat line'
-      PrintPat -> get patternSpace >>= \p -> prnStrLn p >> return NextCmd
-      WriteUpPat -> get patternSpace >>= (prnStrLn . B.takeWhile (/='\n')) >> return NextCmd
-      Quit -> return Exit
+      NextLine -> next
+      AppendLinePat -> appendLinePat
+      PrintPat -> printPat
+      WriteUpPat -> writeUpPat
+      Quit -> quit
       ReadFile file -> readF file
       Substitute pat repl fs -> substitute pat repl fs
-      Test lbl -> get subst >>= \s -> if s then return $ Jump lbl else return NextCmd
+      Test lbl -> test lbl
       WriteFile file -> writeF file
       Exchange -> exchange
       Transform t1 t2 -> transform t1 t2
-      Label _ -> return NextCmd
-      Comment -> return NextCmd
-      EmptyCmd -> return None
+      Label lbl -> label lbl
+      Comment -> comment
+      EmptyCmd -> emptyCmd
 
--- | Execute 'group' Sed function 
-group :: [SedCmd] -> SedState (FileStatus, B.ByteString) -> SedState CmdSchedule  
-group [] _ = return NextCmd
-group (cmd:xs) line' = do
-    sch <- execCmd cmd line'
-    if sch `elem` [NextCmd, None] then
-       group xs line'
+-- | '{cmd...}' Groups subcommands enclosed in {} (braces)
+group :: [SedCmd]  -> SedState FlowControl 
+group [] = return Next
+group (cmd:xs) = do
+    sch <- execCmd cmd
+    if sch == Next then
+       group xs
      else return sch
 
--- | Execute 'delete' from multiline pattern space Sed function
-deletePat :: SedState CmdSchedule
+-- | '=' Writes the current line number to standard output as a line
+lineNum :: SedState FlowControl
+lineNum = 
+    get curLine >>= 
+    (prnStrLn . B.pack . show) >> 
+    return Next
+
+-- | 'a\\ntext' Places the text variable in output before reading 
+-- the next input line
+append :: B.ByteString -> SedState FlowControl
+append txt = 
+    modify appendSpace (++ [txt]) >> 
+    return Next 
+
+-- | 'b label' Transfer control to :label elsewhere in script
+branch :: Maybe Label -> SedState FlowControl
+branch = return . Goto
+
+-- | 'c\\ntext' Replace the lines with the text variable
+change :: B.ByteString -> SedState FlowControl
+change txt = do
+    range <- get inRange
+    unless range $ prnStrLn txt
+    return Break
+
+-- | 'd' Delete line(s) from pattern space
+deleteLine :: SedState FlowControl
+deleteLine = 
+    set patternSpace B.empty >> 
+    return Break
+
+-- | 'D' Delete first part (up to embedded newline) of multiline pattern space
+deletePat :: SedState FlowControl
 deletePat = do
     p <- get patternSpace
-    set patternSpace (B.drop 1 $ B.dropWhile (/='\n') p)
+    let p' = B.drop 1 $ B.dropWhile (/='\n') p
+    set patternSpace p'
     return Continue
 
--- | Execute 'substitute' Sed function
-substitute :: B.ByteString -> B.ByteString -> Flags -> SedState CmdSchedule
+-- | 'g' Copy contents of hold space into the pattern space
+replacePat :: SedState FlowControl
+replacePat = 
+    get holdSpace >>= \h -> 
+    set patternSpace h >> 
+    return Next
+
+-- | 'G' Append newline followed by contents of hold space 
+-- to contents of the pattern space.
+appendPat :: SedState FlowControl
+appendPat = 
+    get holdSpace >>= \h -> 
+    modify patternSpace (`B.append` B.cons '\n' h) >> 
+    return Next
+
+-- | 'h' Copy pattern space into hold space
+replaceHold :: SedState FlowControl
+replaceHold = 
+    get patternSpace >>= \p -> 
+    set holdSpace p >> 
+    return Next
+
+-- | 'H' Append newline and contents of pattern space to contents 
+-- of the hold space
+appendHold :: SedState FlowControl
+appendHold = 
+    get patternSpace >>= \p -> 
+    modify holdSpace (`B.append` B.cons '\n' p) >> 
+    return Next
+
+-- | 'i\\ntext' Writes the text variable to standard output before 
+-- reading the next line into the pattern space.
+insert :: B.ByteString -> SedState FlowControl
+insert txt = prnStrLn txt >> return Next
+
+-- | 't label' Jump to line if successful substitutions have been made
+test :: Maybe Label -> SedState FlowControl
+test lbl = 
+    get subst >>= \s -> 
+    if s then return $ Goto lbl 
+     else return Next
+
+-- | 's/pattern/replacement/[flags]' Substitute replacement for pattern
+substitute :: B.ByteString -> B.ByteString -> Flags -> SedState FlowControl
 substitute pat repl fs = do
   let (gn, p, w) = getFlags fs 
   patSpace <- get patternSpace
   let (repl', b) = sedSubRegex pat patSpace repl gn
   set subst b
-  if b then do
-     set patternSpace repl'
-     _ <- if p then get patternSpace >>= \ps -> prnStrLn ps >> return NextCmd 
-           else return NextCmd
-     if (not.null) w then writeF w >> return NextCmd else return NextCmd
-   else return NextCmd
+  when b $ do
+    set patternSpace repl'
+    when p $ get patternSpace >>= \ps -> prnStrLn ps
+    unless (null w) $ writeF w >> return ()
+  return Next
    where
      getFlags :: Flags -> (Int, Bool, FilePath)
      getFlags (Flags o f) = (occurr, printPat, file) where
@@ -291,25 +369,17 @@ substitute pat repl fs = do
            Just (Replace n) -> n        
         file = fromMaybe "" f
 
--- | Execute 'change' Sed function
-change :: B.ByteString -> SedState CmdSchedule
-change txt = do
-    range <- get inRange
-    if not range then do
-       prnStrLn txt
-       return Break
-     else return Break
-
--- | Execute 'next' Sed function
-next :: SedState (FileStatus, B.ByteString) -> SedState CmdSchedule
-next line' = do
+-- | 'n' Read next line of input into pattern space. 
+next :: SedState FlowControl
+next = do
     printPatSpace
-    (res,str) <- line'
+    (res,str) <- line
     set patternSpace str
-    if res == EOF then return Break else return NextCmd
+    if res == EOF then return Break else return Next
 
--- | Execute 'list' Sed function
-list :: SedState CmdSchedule
+-- | 'l' List the contents of the pattern space, showing 
+-- nonprinting characters as ASCII codes
+list :: SedState FlowControl
 list = do
     patSpace <- get patternSpace
     S.forM_ (B.unpack patSpace) $ \ch ->
@@ -320,42 +390,63 @@ list = do
                  prnPrintf ch
              Just x -> prnStr (B.pack x)
     prnChar '\n'
-    return NextCmd
+    return Next
     where esc = zip "\\\a\b\f\r\t\v"
                     ["\\\\","\\a", "\\b", "\\f", "\\r", "\\t", "\\v"]
 
--- | Execute 'exchange' Sed function
-exchange :: SedState CmdSchedule
+-- | 'x' Exchange contents of the pattern space with the 
+-- contents of the hold space
+exchange :: SedState FlowControl
 exchange = do
     hold <- get holdSpace
     pat  <- get patternSpace
     set holdSpace pat
     set patternSpace hold
-    return NextCmd
+    return Next
 
--- | Execute 'appendLinePat' Sed function
-appendLinePat :: SedState (FileStatus, B.ByteString) -> SedState CmdSchedule
-appendLinePat line' = do
-    (res,ln) <- line'
+-- | 'N' Append next input line to contents of pattern space
+appendLinePat :: SedState FlowControl
+appendLinePat = do
+    (res,ln) <- line
     if res == EOF then return Break
       else do
        let suffix = B.append (B.pack "\n") ln
        modify patternSpace (`B.append` suffix)
-       return None
+       return Next
 
--- | Execute 'transform' Sed function
-transform :: B.ByteString -> B.ByteString -> SedState CmdSchedule
+-- | 'p' Print the lines
+printPat :: SedState FlowControl
+printPat = 
+     get patternSpace >>= \p -> 
+     prnStrLn p >> 
+     return Next
+
+-- | 'P' Print first part (up to embedded newline) of 
+-- multiline pattern space
+writeUpPat :: SedState FlowControl
+writeUpPat = 
+     get patternSpace >>= 
+     (prnStrLn . B.takeWhile (/='\n')) >> 
+     return Next
+
+-- | 'q' Quit
+quit :: SedState FlowControl
+quit = return Exit
+
+-- | 'y/abc/xyz' Transform each character by position in string abc 
+-- to its equivalent in string xyz
+transform :: B.ByteString -> B.ByteString -> SedState FlowControl
 transform t1 t2 = do
     when (B.length t1 /= B.length t2) $ 
       error "Transform strings are not the same length"
     patSpace <- get patternSpace
     let tr = B.map go patSpace
     set patternSpace tr 
-    return NextCmd
+    return Next
     where go ch = fromMaybe ch (lookup ch (B.zip t1 t2))
 
--- | Write contents of the pattern space to the file
-writeF :: FilePath -> SedState CmdSchedule
+-- | 'w file' Append contents of pattern space to file
+writeF :: FilePath -> SedState FlowControl
 writeF file = do
     fout <- get fileout
     patSpace <- get patternSpace
@@ -366,14 +457,20 @@ writeF file = do
           modify fileout (++ [(file,h)])
           printFileout h
        Just h -> printFileout h
-    return NextCmd
+    return Next
 
--- | Add contents of the input file to the append space
-readF :: FilePath -> SedState CmdSchedule
+-- | 'r' Read contents of file and append after the contents of the 
+-- pattern space
+readF :: FilePath -> SedState FlowControl
 readF file = do
     cont <- S.lift $ B.readFile file `catch` \_ -> return B.empty
     modify appendSpace (++ [cont])
-    return NextCmd
+    return Next
+
+-- | Skip label, comment and empty command
+label _ = return Next
+comment  = return Next
+emptyCmd = return Next
 
 -- | Print the pattern space to the standard output
 printPatSpace :: SedState ()

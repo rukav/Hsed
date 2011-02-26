@@ -24,7 +24,7 @@ data SedFun =
             | Append Text            -- ^ a - append text following each line matched by address 
             | Branch (Maybe Label)   -- ^ b - transfer control to Label
             | Change Text            -- ^ c - replace the lines selected by the address with Text
-            | Delete                 -- ^ d - delete line(s) from pattern space
+            | DeleteLine             -- ^ d - delete line(s) from pattern space
             | DeletePat              -- ^ D - delete (up to newline) of multiline pattern space
             | ReplacePat             -- ^ g - copy hold space into the pattern space
             | AppendPat              -- ^ G - add newline followed by hold space into the pattern space
@@ -32,7 +32,7 @@ data SedFun =
             | AppendHold             -- ^ H - add newline followed by pattern space into the hold space
             | Insert Text            -- ^ i - insert Text before each line matched by address 
             | List                   -- ^ l - list the pattern space, showing non-printing chars in ASCII
-            | Next                   -- ^ n - read next line of input into pattern space
+            | NextLine               -- ^ n - read next line of input into pattern space
             | AppendLinePat          -- ^ N - add next input line and newline into pattern space
             | PrintPat               -- ^ p - print the addressed line(s)
             | WriteUpPat             -- ^ P - print (up to newline) of multiline pattern space   
@@ -47,12 +47,6 @@ data SedFun =
             | Comment                -- ^ # - ignore a line in the script except "#n" in the first line 
             | EmptyCmd               -- ^   - ignore spaces
     deriving Show
-
--- | The work buffer to keep the selected line(s)
---data PatternSpace = PatternSpace [ByteString] deriving Show
-
--- | The work buffer to keep the line(s) temporarily
---data HoldSpace = HoldSpace [ByteString] deriving Show
 
 -- | An address is either a decimal number that counts input lines cumulatively across files, 
 --   a '$' character that addresses the last line of input, or a context address as BRE 
@@ -88,3 +82,5 @@ type Replacement = ByteString
 type Invert = Bool
 type Text = ByteString
 type Label = ByteString
+
+

@@ -116,14 +116,14 @@ writeFile     = fileFun 'w' WriteFile
 label         = argFun ':' Label
 
 lineNum       = bareFun '=' LineNum
-delete        = bareFun 'd' Delete
+delete        = bareFun 'd' DeleteLine
 deletePat     = bareFun 'D' DeletePat
 replacePat    = bareFun 'g' ReplacePat
 appendPat     = bareFun 'G' AppendPat
 replaceHold   = bareFun 'h' ReplaceHold
 appendHold    = bareFun 'H' AppendHold
 list          = bareFun 'l' List
-next          = bareFun 'n' Next
+next          = bareFun 'n' NextLine
 appendLinePat = bareFun 'N' AppendLinePat
 printPat      = bareFun 'p' PrintPat
 writeUpPat    = bareFun 'P' WriteUpPat

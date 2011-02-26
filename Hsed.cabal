@@ -1,5 +1,5 @@
 Name:                Hsed
-Version:             0.1
+Version:             0.2
 Description:         Haskell Stream Editor
 License:             BSD3
 License-File:        LICENSE
@@ -35,21 +35,26 @@ Data-Files:	     Append.in,Append.ok,Append.sed,Branch.in,Branch.ok,Branch.sed,
                      WriteFile.sed,company.lst
 Cabal-Version:       >=1.2
 
+Library
+  Exposed-Modules:   Sed
+  Other-modules:     Ast, SedRegex, Parsec, SedState, StreamEd
+  Build-Depends:     base >= 3.0.3.2 && < 5, 
+                     Glob >= 0.5.1, 
+                     cmdargs >= 0.3, 
+                     data-accessor >= 0.2.1.4,
+                     data-accessor-template >= 0.2.1.5, 
+                     data-accessor-transformers >= 0.2.1.2, 
+                     parsec, 
+                     bytestring, 
+                     regex-compat, 
+                     regex-base,
+                     regex-posix, 
+                     array, 
+                     filepath, 
+                     directory,
+                     mtl, 
+                     haskell98
+
 Executable Hsed
-    Main-is:             Hsed.hs
-    Other-modules:  	 Ast, SedRegex, Parsec, SedState, StreamEd, TestSuite
-    Build-Depends:       base >= 3.0.3.2 && < 5, 
-                         Glob >= 0.5.1, 
-                         cmdargs >= 0.3, 
-                         data-accessor >= 0.2.1.4,
-                         data-accessor-template >= 0.2.1.5, 
-                         data-accessor-transformers >= 0.2.1.2, 
-                         parsec, 
-                         bytestring, 
-                         regex-compat, 
-                         regex-base,
-                         regex-posix, 
-                         array, 
-                         filepath, 
-                         mtl, 
-                         haskell98
+    Main-is:         Hsed.hs
+    Other-modules:   TestSuite
