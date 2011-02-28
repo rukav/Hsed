@@ -36,8 +36,9 @@ Data-Files:	     Append.in,Append.ok,Append.sed,Branch.in,Branch.ok,Branch.sed,
 Cabal-Version:       >=1.2
 
 Library
-  Exposed-Modules:   Sed
-  Other-modules:     Ast, SedRegex, Parsec, SedState, StreamEd
+  Hs-Source-Dirs:    src
+  Exposed-Modules:   Hsed.Sed
+  Other-modules:     Hsed.Ast, Hsed.SedRegex, Hsed.Parsec, Hsed.SedState, Hsed.StreamEd
   Build-Depends:     base >= 3.0.3.2 && < 5, 
                      Glob >= 0.5.1, 
                      cmdargs >= 0.3, 
@@ -56,5 +57,6 @@ Library
                      haskell98
 
 Executable Hsed
-    Main-is:         Hsed.hs
+    Hs-Source-Dirs:  src
+    Main-is:         Main.hs
     Other-modules:   TestSuite

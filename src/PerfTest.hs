@@ -1,9 +1,9 @@
 import System
 import Criterion.Main
 import qualified Control.Monad.State as S
-import qualified StreamEd as E
+import qualified Hsed.StreamEd as E
 import Prelude hiding (words)
-import SedState
+import Hsed.SedState
 
 wordsArgs :: [String]
 wordsArgs = ["-n","-e","/^repay/p","tests/words.txt"]

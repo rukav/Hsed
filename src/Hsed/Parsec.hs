@@ -11,13 +11,13 @@
 -- parsing requirements. The current version of the Haskell Sed doesn't supports
 -- the back-references in the RE.
 
-module Parsec where
+module Hsed.Parsec where
 
 import Prelude hiding (readFile, writeFile)
 import Text.ParserCombinators.Parsec hiding (label)
 import qualified Data.ByteString.Char8 as B
-import Ast
-import SedRegex
+import Hsed.Ast
+import Hsed.SedRegex
 
 -- | If an RE is empty last RE used in the last command applied 
 data ParserState = ParserState {

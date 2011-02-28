@@ -12,23 +12,20 @@
 -- The Sed runtime engine. The execution sequence includes the parseArgs (parse the Sed options/args),
 -- compile (parse) Sed commands, execute Sed commands.
 
-module StreamEd where
+module Hsed.StreamEd where
 
 import System.IO 
-import System.FilePath (splitFileName)
 import Control.Monad (unless, when)
 import qualified Control.Monad.State as S
-import qualified Control.Exception as E
-import qualified System.FilePath.Glob as G (compile, globDir1) 
 import Data.List (isPrefixOf)
 import Data.Char (isPrint)
 import Data.Maybe (fromMaybe)
 import qualified Data.ByteString.Char8 as B
 import Text.Printf (printf)
-import Parsec (parseSed, sedCmds)
-import Ast
-import SedRegex
-import SedState
+import Hsed.Parsec (parseSed, sedCmds)
+import Hsed.Ast
+import Hsed.SedRegex
+import Hsed.SedState
 
 data Status = EOF | Cont 
    deriving (Eq, Show)
@@ -41,46 +38,15 @@ data FlowControl =
   | Exit                      -- ^ Quit 
    deriving (Eq, Show)
 
--- | Run Sed program
-run :: [String] -> IO ()
-run args = 
-    S.execStateT (do 
-           (files, cmds) <- parseArgs args
-           compile cmds
-           execute files
-         ) initEnv >> return ()
-
--- | Parse Sed program's arguments
-parseArgs :: [String] -> SedState ([FilePath], String)
-parseArgs xs = parseArgs' xs ([],[]) where
-    parseArgs' [] fs = return fs
-    parseArgs' [x] fs 
-       | x == "-n" = set defOutput False >> return fs
-       | otherwise = parseCmds x fs
-    parseArgs' (x:y:ys) fs
-       | x == "-e" = parseArgs' ys (addCmd fs y)
-       | x == "-f" = do
-            sed <- S.lift $ System.IO.readFile y `catch` openFileError y
-            when ("#n" `isPrefixOf` sed) $ set defOutput False 
-            parseArgs' ys (addCmd fs sed)
-       | x == "-n" = set defOutput False >> parseArgs' (y:ys) fs
-       | otherwise = parseCmds x fs >>= \fs' -> parseArgs' (y:ys) fs'
-       where
-         addCmd (files, cmds) x' = (files, cmds ++ ('\n':x'))
-
-openFileError :: String -> E.IOException -> IO [a]
-openFileError f e = putStr ("Error: Couldn't open " ++ f ++ ": " ++ 
-                    show (e :: E.IOException)) >> return []
-
--- | Parse Sed program's embedded commands and the input files arguments
-parseCmds :: String -> ([FilePath], String) -> SedState ([FilePath], String)
-parseCmds x (files, cmds) = 
-    if null cmds then return (files, x) 
-     else do 
-       let (dir, fp) = splitFileName x
-       fs <- S.lift $ G.globDir1 (G.compile fp) dir
-       if null fs then error $ fp ++ ": No such file or directory"
-        else return (files ++ fs, cmds)
+-- | Compile and execute the sed script
+runSed :: [FilePath] -> String -> Env -> IO Env
+runSed fs sed env = 
+   S.execStateT (do
+     when ("#n" `isPrefixOf` sed) $ 
+       set defOutput False 
+     compile sed 
+     execute fs
+   ) env
 
 -- | Parse the Sed commands
 compile :: String -> SedState ()

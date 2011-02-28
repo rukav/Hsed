@@ -7,7 +7,7 @@
 
 -- The Sed regular expression implementation based on the regex-posix package.   
 
-module SedRegex where
+module Hsed.SedRegex where
 
 import Data.Array ((!))
 import Text.Regex.Posix

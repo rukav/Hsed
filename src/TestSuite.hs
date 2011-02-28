@@ -8,10 +8,10 @@ import qualified Control.Monad.State as S
 import System.Console.CmdArgs
 import Data.List (isPrefixOf)
 import qualified Data.ByteString.Char8 as B
-import Parsec (parseSed, sedCmds)
-import StreamEd
-import SedState
-import Sed (execScript')
+import Hsed.Parsec (parseSed, sedCmds)
+import Hsed.StreamEd
+import Hsed.SedState
+import Hsed.Sed (execScript)
 
 data Config = Config {
   dir :: FilePath,
@@ -73,9 +73,9 @@ testFile :: FilePath -> String -> String -> IO ()
 testFile script inext okext = do
     let inpfile = replaceExtension script inext
     let okfile = replaceExtension script okext    
-    sed <- readFile script `catch` openFileError script
-    res <- execScript' [inpfile] sed
-    okf <- B.readFile okfile `catch` openFileErrorB okfile 
+    sed <- B.readFile script `catch` openFileError script
+    res <- execScript [inpfile] (B.unpack sed)
+    okf <- B.readFile okfile `catch` openFileError okfile 
     if res == okf then 
       putStrLn $ passed script
      else do
@@ -84,8 +84,8 @@ testFile script inext okext = do
       print "===>"
       mapM_ print (B.lines res)
     where
-      openFileErrorB f e = putStr ("Error: Couldn't open " ++ f ++ 
-           ": " ++ show (e :: E.IOException)) >> return B.empty
+      openFileError f e = putStr ("Error: Couldn't open " ++ f ++ 
+           ": " ++ show (e :: E.IOException)) >> return B.empty      
 
 testDir :: FilePath -> String -> String -> IO ()
 testDir path inpext okext = do

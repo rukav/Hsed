@@ -11,14 +11,14 @@
 --
 -- The state of the program 
 
-module SedState where
+module Hsed.SedState where
 
 import qualified Control.Monad.State as S
 import qualified Data.Accessor.Basic as A
 import qualified Data.ByteString.Char8 as B
 import Data.Accessor.Template (deriveAccessors)
 import System.IO
-import Ast
+import Hsed.Ast
 
 data Env = Env {
   ast_ :: [SedCmd],                 -- ^ Parsed Sed commands

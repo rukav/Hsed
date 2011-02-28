@@ -7,6 +7,6 @@ Usage: Hsed [-n] script [file...],
 
 To run tests suite build and run TestSuite.hs:
 $ ghc --make TestSuite.hs
-$ ./TestSuite --dir tests --inp in --ok ok
+$ ./TestSuite --dir ../tests --inp in --ok ok
 
 

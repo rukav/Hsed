@@ -9,9 +9,9 @@
 --
 -- The main types used in the program
 
-module Ast where 
+module Hsed.Ast where 
 
-import SedRegex (Pattern)
+import Hsed.SedRegex (Pattern)
 import Data.ByteString.Char8 (ByteString)
 
 -- | Editing commands

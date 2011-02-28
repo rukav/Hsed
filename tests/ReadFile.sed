@@ -1,1 +1,1 @@
-/^Company-list/r tests/company.lst
+/^Company-list/r ../tests/company.lst
