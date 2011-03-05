@@ -2,15 +2,15 @@
 
 -- |
 -- Module      :  StreamEd
--- Copyright   :  (c) Vitaliy Rkavishnikov
+-- Copyright   :  (c) Vitaliy Rukavishnikov
 -- License     :  BSD-style (see the file LICENSE)
 -- 
 -- Maintainer  :  virukav@gmail.com
 -- Stability   :  experimental
 -- Portability :  non-portable
 --
--- The Sed runtime engine. The execution sequence includes the parseArgs (parse the Sed options/args),
--- compile (parse) Sed commands, execute Sed commands.
+-- The Sed runtime engine. The execution sequence includes the parseArgs 
+-- compile (parse) and execute Sed commands.
 
 module Hsed.StreamEd where
 

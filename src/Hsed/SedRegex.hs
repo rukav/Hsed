@@ -3,7 +3,7 @@
 
 -- Maintainer  :  virukav@gmail.com
 -- Stability   :  experimental
--- Portability :  non-portable-- |
+-- Portability :  non-portable
 
 -- The Sed regular expression implementation based on the regex-posix package.   
 
@@ -11,7 +11,6 @@ module Hsed.SedRegex where
 
 import Data.Array ((!))
 import Text.Regex.Posix
---import Text.Regex.TDFA
 import Text.Regex
 import qualified Data.ByteString.Char8 as B
 
@@ -24,10 +23,9 @@ sedSubRegex :: B.ByteString         -- ^ Search pattern
             -> B.ByteString         -- ^ Replacement text
             -> Int                  -- ^ Occurrence
             -> (B.ByteString, Bool) -- ^ (Output string, Replacement occurs)
---sedSubRegex _ "" _ _ = ("", True)
+-- sedSubRegex _ "" _ _ = ("", True)
 sedSubRegex pat inp repl n =
   let regexp = makeRegexOpts compExtended defaultExecOpt pat
-  --let regexp = mkRegex pat -- for TDFA
       compile _i str [] = \ _m -> B.append str
       compile i str ((xstr,(off,len)):rest) =
         let i' = off+len

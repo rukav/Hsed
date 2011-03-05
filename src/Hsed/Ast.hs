@@ -1,6 +1,6 @@
 -- |
 -- Module      :  Ast
--- Copyright   :  (c) Vitaliy Rkavishnikov
+-- Copyright   :  (c) Vitaliy Rukavishnikov
 -- License     :  BSD-style (see the file LICENSE)
 -- 
 -- Maintainer  :  virukav@gmail.com

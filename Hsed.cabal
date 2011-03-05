@@ -1,6 +1,10 @@
 Name:                Hsed
-Version:             0.2
-Description:         Haskell Stream Editor
+Version:             0.2.1
+Description:         A version of sed editor in Haskell based on POSIX "The Open Group Base 
+                     Specifications Issue 7" IEEE Std 1003.1-2008.
+                     .
+                     For the library usage check Hsed.Sed module and for the program usage 
+                     take a look in the attached README file
 License:             BSD3
 License-File:        LICENSE
 Author:              Vitaliy Rukavishnikov
@@ -37,8 +41,7 @@ Cabal-Version:       >=1.2
 
 Library
   Hs-Source-Dirs:    src
-  Exposed-Modules:   Hsed.Sed
-  Other-modules:     Hsed.Ast, Hsed.SedRegex, Hsed.Parsec, Hsed.SedState, Hsed.StreamEd
+  Exposed-Modules:   Hsed.Sed, Hsed.Ast, Hsed.SedRegex, Hsed.Parsec, Hsed.SedState, Hsed.StreamEd
   Build-Depends:     base >= 3.0.3.2 && < 5, 
                      Glob >= 0.5.1, 
                      cmdargs >= 0.3, 
