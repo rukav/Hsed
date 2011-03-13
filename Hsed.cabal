@@ -1,5 +1,5 @@
 Name:                Hsed
-Version:             0.2.1
+Version:             0.2.2
 Description:         A version of sed editor in Haskell based on POSIX "The Open Group Base 
                      Specifications Issue 7" IEEE Std 1003.1-2008.
                      .
@@ -48,6 +48,7 @@ Library
                      data-accessor >= 0.2.1.4,
                      data-accessor-template >= 0.2.1.5, 
                      data-accessor-transformers >= 0.2.1.2, 
+                     GotoT-transformers,
                      parsec, 
                      bytestring, 
                      regex-compat, 

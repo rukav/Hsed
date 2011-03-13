@@ -22,11 +22,10 @@ import Hsed.SedState
 
 type SedScript = String
 
--- | Execute the sed script and print the output to ByteString.
---
---   Example. Suppose the ../tests/Transform.in file contains the line 'Hello world!'.
---   The execScript ["../tests/Transform.in"] "y/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/"
---   will produce 'HELLO WORLD!' bytestring. 
+-- | Execute the sed script and print the output to ByteString. 
+-- Example. Suppose the ../tests/Transform.in file contains the line 'Hello world!'.
+-- execScript [\"../tests/Transform.in\"] \"y/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/\"
+-- will produce 'HELLO WORLD!' bytestring.
 execScript :: [FilePath] -> SedScript -> IO B.ByteString
 execScript files script = do
    env <- runSed files script (initEnv {useMemSpace_ = True})

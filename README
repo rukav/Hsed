@@ -1,5 +1,7 @@
 This is a version of sed based on POSIX "The Open Group Base Specifications Issue 7" 
 IEEE Std 1003.1-2008.  
+This version of the Haskell Sed uses regex-posix package to parse all regular 
+expressions. At the moment it doesn't supports the back-references in the RE.
 
 Usage: Hsed [-n] script [file...],
        Hsed [-n] -e script [-e script]... [-f script_file]... [file...],

@@ -44,7 +44,7 @@ data SedFun =
             | Exchange               -- ^ x - exchange pattern space with hold space
             | Transform Text Text    -- ^ y - transform each char by position in Text to Text
             | Label Label            -- ^ : - label a line in the scipt for transfering by b or t.
-            | Comment                -- ^ # - ignore a line in the script except "#n" in the first line 
+            | Comment                -- ^ # - ignore a line in the script except \"#n\" in the first line 
             | EmptyCmd               -- ^   - ignore spaces
     deriving Show
 

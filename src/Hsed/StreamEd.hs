@@ -1,5 +1,3 @@
-{-# LANGUAGE DeriveDataTypeable #-}
-
 -- |
 -- Module      :  StreamEd
 -- Copyright   :  (c) Vitaliy Rukavishnikov
@@ -9,23 +7,26 @@
 -- Stability   :  experimental
 -- Portability :  non-portable
 --
--- The Sed runtime engine. The execution sequence includes the parseArgs 
--- compile (parse) and execute Sed commands.
+-- The Sed runtime engine
 
 module Hsed.StreamEd where
 
 import System.IO 
-import Control.Monad (unless, when)
+import Control.Monad (unless, when, forM_, zipWithM)
 import qualified Control.Monad.State as S
+import Control.Monad.Trans.Goto
 import Data.List (isPrefixOf)
 import Data.Char (isPrint)
 import Data.Maybe (fromMaybe)
 import qualified Data.ByteString.Char8 as B
 import Text.Printf (printf)
+
 import Hsed.Parsec (parseSed, sedCmds)
 import Hsed.Ast
 import Hsed.SedRegex
 import Hsed.SedState
+
+type SedEngine a = GotoT a (S.StateT Env IO) a
 
 data Status = EOF | Cont 
    deriving (Eq, Show)
@@ -40,12 +41,12 @@ data FlowControl =
 
 -- | Compile and execute the sed script
 runSed :: [FilePath] -> String -> Env -> IO Env
-runSed fs sed env = 
-   S.execStateT (do
-     when ("#n" `isPrefixOf` sed) $ 
-       set defOutput False 
-     compile sed 
-     execute fs
+runSed fs sed env = do
+  S.execStateT (runGotoT $ do
+       when ("#n" `isPrefixOf` sed) $ 
+         S.lift $ set defOutput False 
+       S.lift $ compile sed
+       execute fs 
    ) env
 
 -- | Parse the Sed commands
@@ -57,48 +58,64 @@ compile cmds = do
   return ()
 
 -- | Execute the parsed Sed commands against input data
-execute :: [FilePath] -> SedState ()
+execute :: [FilePath] -> SedEngine ()
 execute fs = do
-   if null fs then processStdin
-     else processFiles fs
-   fout <- get fileout
-   S.lift $ S.mapM_ hClose (map snd fout)
-
--- | The standard input will be used if no file operands are specified
-processStdin :: SedState ()
-processStdin = do
-    e <- get exit
-    unless e $ do
-      set curFile (stdin, True)
-      a <- get ast
-      loop a
+   processFiles fs
+   fout <- S.lift $ get fileout
+   S.liftIO $ S.mapM_ hClose (map snd fout)
 
 -- | Process the input text files
-processFiles :: [FilePath] -> SedState ()
+processFiles :: [FilePath] -> SedEngine ()
 processFiles files = do
-    let len = length files
-    let fs = zipWith (\x y -> (x, y == len)) files [1..len]
-    S.forM_ fs $ \(file, lastFile) -> do
-        e <- get exit
-        unless e $ do
-           h <- S.lift $ openFile file ReadMode
-           set curFile (h, lastFile)
-           a <- get ast
-           loop a
+   if null files then processFile stdin True
+    else do
+      let len = length files
+      let fs = zipWith (\x y -> (x, y == len)) files [1..len]
+      S.forM_ fs $ \(file, lastFile) -> do
+         h <- S.liftIO $ openFile file ReadMode
+         processFile h lastFile
+   where
+      processFile h lastFile = do
+         S.lift $ set curFile (h, lastFile)
+         nextLine
 
--- | Cyclically append a line of input without newline into the pattern space
-loop :: [SedCmd] -> SedState ()
-loop cs = do
-      (res, str) <- line 
-      case res of
-        EOF -> get curFile >>= \(h,_) -> S.lift $ hClose h >> return ()
-        _   -> do
-          set patternSpace str
-          set appendSpace []
-          sch <- eval cs
-          case sch of 
-            Exit -> return ()
-            _    -> loop cs
+-- | Process the next input line from the file
+nextLine :: SedEngine ()
+nextLine = do
+    (res, str) <- S.lift line
+    case res of
+        EOF  -> return ()
+        Cont -> do
+          S.lift $ set patternSpace str
+          S.lift $ set appendSpace []
+          cs <- S.lift $ get ast
+          execCmds cs  
+          nextLine
+
+-- | Execute sed script
+execCmds :: [SedCmd] -> SedEngine ()
+execCmds cs = do
+    forM_ cs $ \cmd -> do
+      sch <- S.lift $ execCmd cmd
+      case sch of
+        Next -> return ()
+        Break -> goto nextLine
+        Continue -> goto (execCmds cs >> nextLine)
+        Goto lbl -> (S.lift $ get ast) >>= \a -> goto (execCmds (jump a lbl) >> nextLine)
+        Exit -> prnPat >> goto (return ())
+    prnPat
+    where prnPat = S.lift $ printPatSpace >> get appendSpace >>= \a -> mapM_ prnStr a
+
+-- | Transfer control to the command marked with the label
+jump :: [SedCmd] -> Maybe Label -> [SedCmd]      
+jump cmds = maybe [] (go cmds)
+  where 
+        go [] _ = []
+        go (SedCmd _ fun:cs) str = case fun of
+           Group cs' -> go cs' str
+           Label x -> if x == str then cs
+                       else go cs str
+           _ -> go cs str 
 
 -- | Read an input line
 line :: SedState (Status, B.ByteString)
@@ -111,42 +128,9 @@ line = do
        modify curLine (+1)
        isLast <- if h == stdin then return False 
                    else S.lift (hIsEOF h) >>= \eof -> return eof
-
        if isLast && b then                
            get curLine >>= \l -> set lastLine l >> return (Cont, str)
-        else return (Cont, str)
-
--- | Manage the flow control of the Sed commands
-eval :: [SedCmd] -> SedState FlowControl
-eval cs = do
-    sch <- execCmds cs
-    case sch of
-       Goto lbl -> get ast >>= \as -> eval (goto as lbl)
-       Exit -> printPatSpace >> get appendSpace >>= \a -> 
-               mapM_ prnStr a >> set exit True >> return Exit
-       _ -> get appendSpace >>= \a -> mapM_ prnStr a >> return sch
-
--- | Transfer control to the command marked with the label
-goto :: [SedCmd] -> Maybe Label -> [SedCmd]      
-goto cmds = maybe [] (go cmds)
-  where 
-        go [] _ = []
-        go (SedCmd _ fun:cs) str = case fun of
-           Group cs' -> go cs' str
-           Label x -> if x == str then cs
-                       else go cs str
-           _ -> go cs str   
-
--- | Execute Sed commands
-execCmds :: [SedCmd] -> SedState FlowControl
-execCmds [] = printPatSpace >> return Next
-execCmds (x:xs) = do
-    sch <- execCmd x
-    if sch `elem` [Next] then execCmds xs
-     else if sch == Continue then do
-       cs <- get ast
-       execCmds cs
-     else return sch
+        else return (Cont, str)  
 
 -- | Execute the Sed function if the address is matched
 execCmd :: SedCmd -> SedState FlowControl
@@ -154,7 +138,6 @@ execCmd (SedCmd a fun) = do
      b <- matchAddress a
      if b then runCmd fun
       else return Next
-
 
 -- | Check if the address interval is matched  
 matchAddress :: Address -> SedState Bool
@@ -240,7 +223,7 @@ lineNum =
 -- the next input line
 append :: B.ByteString -> SedState FlowControl
 append txt = 
-    modify appendSpace (++ [txt]) >> 
+    modify appendSpace (++ [txt,B.pack "\n"]) >> 
     return Next 
 
 -- | 'b label' Transfer control to :label elsewhere in script
